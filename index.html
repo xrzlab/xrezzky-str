@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XREZZKY STORE</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <header class="navbar" id="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <span>XREZZKY</span><span class="logo-accent">STORE</span>
+            </div>
+            <nav class="nav-links" id="navLinks">
+                <a href="#home" class="active">Beranda</a>
+                <a href="#products">Produk</a>
+                <a href="#deposit">Deposit</a>
+                <a href="#history">Riwayat</a>
+                <a href="#contact">Kontak</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn-icon" id="cartBtn"><i class="fas fa-shopping-cart"></i><span class="cart-badge" id="cartBadge">0</span></button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="home">
+        <div class="hero-video-wrapper">
+            <video class="hero-video" autoplay muted loop playsinline>
+                <source src="VIDEO/banner.mp4" type="video/mp4" />
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+            </video>
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content container">
+            <div class="hero-badge"><i class="fas fa-bolt"></i> Premium Digital Store</div>
+            <h1 class="hero-title"><span class="highlight">XREZZKY</span> STORE</h1>
+            <p class="hero-subtitle">Tempat terpercaya untuk membeli akun, kode digital, dan jasa. Aman, cepat, dan harga terbaik.</p>
+            <div class="hero-actions">
+                <a href="#products" class="btn-primary"><i class="fas fa-store"></i> Lihat Produk</a>
+                <a href="#deposit" class="btn-secondary"><i class="fas fa-wallet"></i> Deposit</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item"><span class="stat-number" id="totalProductsStat">10</span><span class="stat-label">Produk</span></div>
+                <div class="stat-item"><span class="stat-number" id="totalCustomersStat">0</span><span class="stat-label">Pelanggan</span></div>
+                <div class="stat-item"><span class="stat-number">24/7</span><span class="stat-label">Layanan</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PRODUK ===== -->
+    <section class="products" id="products">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag"><i class="fas fa-grid-2"></i> Katalog</div>
+                <h2 class="section-title">Produk <span class="highlight">Unggulan</span></h2>
+                <p class="section-desc">Pilih produk digital, akun, atau jasa terbaik dari XREZZKY STORE.</p>
+            </div>
+            <div class="product-grid" id="productGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== DEPOSIT ===== -->
+    <section class="deposit-section" id="deposit">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag"><i class="fas fa-wallet"></i> Isi Saldo</div>
+                <h2 class="section-title">Deposit <span class="highlight">QRIS</span></h2>
+                <p class="section-desc">Isi saldo Anda dengan cepat menggunakan QRIS dinamis. Waktu deposit 5 menit.</p>
+            </div>
+            <div class="deposit-wrapper">
+                <div class="deposit-form">
+                    <div class="form-group">
+                        <label>Nominal Deposit (Rp)</label>
+                        <input type="number" id="depositAmount" placeholder="Masukkan nominal" min="1" step="1000" value="50000" />
+                    </div>
+                    <div class="form-group">
+                        <label>Metode Pembayaran</label>
+                        <select id="depositMethod">
+                            <option value="QRIS">QRIS (Semua Bank & E-Wallet)</option>
+                            <option value="Bank BCA">Bank BCA</option>
+                            <option value="Bank Mandiri">Bank Mandiri</option>
+                            <option value="OVO">OVO</option>
+                            <option value="GoPay">GoPay</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary full" id="depositBtn"><i class="fas fa-qrcode"></i> Generate QRIS</button>
+                </div>
+                <div class="deposit-qr" id="qrContainer">
+                    <div class="qr-placeholder">
+                        <i class="fas fa-qrcode" style="font-size:4rem;color:#00b4ff;"></i>
+                        <p>Klik tombol untuk generate QRIS</p>
+                        <img src="IMAGES/topup.jpg" alt="topup" style="max-width:100px;margin-top:10px;opacity:0.5;" onerror="this.style.display='none'" />
+                    </div>
+                    <div id="qrResult" style="display:none;text-align:center;width:100%;">
+                        <img id="qrImage" src="" alt="QRIS" style="width:200px;height:200px;border-radius:12px;background:#fff;padding:12px;margin:0 auto;" />
+                        <p id="qrAmount" style="margin-top:12px;font-weight:600;color:#00b4ff;"></p>
+                        <p id="qrTimer" style="font-weight:500;color:#ffb347;">⏱️ 05:00</p>
+                        <p style="font-size:0.9rem;color:#8899bb;">Scan QRIS untuk menyelesaikan deposit</p>
+                        <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
+                            <button class="btn-secondary" id="confirmDepositBtn"><i class="fas fa-check"></i> Konfirmasi</button>
+                            <button class="btn-secondary" id="downloadQrBtn"><i class="fas fa-download"></i> Download QRIS</button>
+                            <button class="btn-secondary" id="cancelDepositBtn" style="border-color:#ff4d6d;color:#ff4d6d;"><i class="fas fa-times"></i> Batal</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Riwayat Deposit -->
+            <div class="deposit-history" style="margin-top:40px;">
+                <h4 style="margin-bottom:16px;"><i class="fas fa-clock-rotate-left"></i> Riwayat Deposit</h4>
+                <div id="depositHistoryList" class="history-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== RIWAYAT TRANSAKSI ===== -->
+    <section class="history-section" id="history">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag"><i class="fas fa-clock-rotate-left"></i> Transaksi</div>
+                <h2 class="section-title">Riwayat <span class="highlight">Transaksi</span></h2>
+                <p class="section-desc">Semua transaksi pembelian Anda tercatat di sini.</p>
+            </div>
+            <div id="historyList" class="history-list"></div>
+        </div>
+    </section>
+
+    <!-- ===== CONTACT ===== -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <div class="section-tag"><i class="fas fa-envelope"></i> Hubungi Kami</div>
+                    <h2 class="section-title">Siap <span class="highlight">Membantu</span></h2>
+                    <p class="contact-desc">Ada pertanyaan? Tim kami siap merespon cepat.</p>
+                    <div class="contact-channels">
+                        <a href="#" class="channel-item"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
+                        <a href="#" class="channel-item"><i class="fab fa-telegram"></i><span>Telegram</span></a>
+                        <a href="#" class="channel-item"><i class="fas fa-envelope"></i><span>Email</span></a>
+                        <a href="#" class="channel-item"><i class="fab fa-instagram"></i><span>Instagram</span></a>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group"><label>Nama</label><input type="text" id="contactName" placeholder="Nama" required /></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="contactEmail" placeholder="Email" required /></div>
+                    <div class="form-group"><label>Pesan</label><textarea rows="4" id="contactMessage" placeholder="Tulis pesan..." required></textarea></div>
+                    <button type="submit" class="btn-primary full"><i class="fas fa-paper-plane"></i> Kirim</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo"><i class="fas fa-cube"></i><span>XREZZKY</span><span class="logo-accent">STORE</span></div>
+                    <p class="footer-desc">Platform jual beli akun, kode digital, dan jasa terpercaya.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links"><h4>Menu</h4><a href="#home">Beranda</a><a href="#products">Produk</a><a href="#deposit">Deposit</a><a href="#history">Riwayat</a></div>
+                <div class="footer-links"><h4>Kategori</h4><a href="#products">Akun</a><a href="#products">Kode Digital</a><a href="#products">Jasa</a></div>
+                <div class="footer-links"><h4>Kontak</h4><a href="#"><i class="fas fa-phone"></i> +62 812 3456 7890</a><a href="#"><i class="fas fa-envelope"></i> support@xrezzky.com</a></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 <strong>XREZZKY STORE</strong>. All rights reserved.</p><p class="footer-credit">Built with <i class="fas fa-heart" style="color:#00b4ff;"></i> by XREZZKY</p></div>
+        </div>
+    </footer>
+
+    <!-- ===== CART SIDEBAR ===== -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <aside class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header"><h3><i class="fas fa-shopping-cart"></i> Keranjang</h3><button class="cart-close" id="cartClose">&times;</button></div>
+        <div class="cart-body" id="cartBody">
+            <div class="cart-empty"><i class="fas fa-cart-plus"></i><p>Keranjang kosong</p><span>Mulai belanja!</span></div>
+            <div class="cart-items" id="cartItems"></div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total"><span>Total</span><span id="cartTotal">Rp 0</span></div>
+            <button class="btn-primary full" id="checkoutBtn"><i class="fas fa-check"></i> Checkout</button>
+        </div>
+    </aside>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMessage">Sukses!</span></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
