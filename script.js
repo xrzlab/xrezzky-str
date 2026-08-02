@@ -14,13 +14,16 @@ const productData = [
 
 // ===== NOMINAL TOP UP =====
 const topUpNominal = {
-    'Free Fire': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }, { label: '100.000', value: 100000 }],
-    'Mobile Legends': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }, { label: '100.000', value: 100000 }],
-    'Block Strike': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }],
-    'PUBG': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }, { label: '100.000', value: 100000 }],
-    'Roblox': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }, { label: '100.000', value: 100000 }],
-    'Among Us': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }]
+    'Free Fire': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Hemat', original: 23000 }, { label: '50.000', value: 50000, tag: 'Populer', original: 55000 }, { label: '100.000', value: 100000 }],
+    'Mobile Legends': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Hemat', original: 23000 }, { label: '50.000', value: 50000, tag: 'Populer', original: 55000 }, { label: '100.000', value: 100000 }],
+    'Block Strike': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Populer' }, { label: '50.000', value: 50000 }],
+    'PUBG': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Hemat', original: 23000 }, { label: '50.000', value: 50000, tag: 'Populer', original: 55000 }, { label: '100.000', value: 100000 }],
+    'Roblox': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Hemat', original: 23000 }, { label: '50.000', value: 50000, tag: 'Populer', original: 55000 }, { label: '100.000', value: 100000 }],
+    'Among Us': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Populer' }, { label: '50.000', value: 50000 }]
 };
+
+// Game yang butuh Zone ID / Server ID selain User ID
+const gamesNeedServerId = ['Mobile Legends'];
 
 // ===== STATE =====
 let products = JSON.parse(localStorage.getItem('xrezzky_products')) || productData;
@@ -30,6 +33,14 @@ let depositHistory = JSON.parse(localStorage.getItem('xrezzky_deposits')) || [];
 let depositTimer = null;
 let depositTimeLeft = 300;
 let currentQrData = null;
+
+// ===== STATE TOP UP MODAL =====
+let currentTopUpProduct = null;
+let currentTopUpNominal = null;
+let currentTopUpMethod = 'Saldo';
+let idVerified = false;
+let verifiedNickname = '';
+let savedGameIds = JSON.parse(localStorage.getItem('xrezzky_game_ids')) || {};
 
 // ===== DOM =====
 const productGrid = document.getElementById('productGrid');
@@ -47,6 +58,15 @@ const modalGameTitle = document.getElementById('modalGameTitle');
 const modalGameImage = document.getElementById('modalGameImage');
 const modalGameName = document.getElementById('modalGameName');
 const nominalList = document.getElementById('nominalList');
+const topupUserId = document.getElementById('topupUserId');
+const topupServerId = document.getElementById('topupServerId');
+const checkIdBtn = document.getElementById('checkIdBtn');
+const idCheckResult = document.getElementById('idCheckResult');
+const topupSummary = document.getElementById('topupSummary');
+const summaryNominal = document.getElementById('summaryNominal');
+const summaryTotal = document.getElementById('summaryTotal');
+const paymentChipGroup = document.getElementById('paymentChipGroup');
+const processTopupBtn = document.getElementById('processTopupBtn');
 
 // ===== SAVE =====
 function saveProducts() { localStorage.setItem('xrezzky_products', JSON.stringify(products)); }
@@ -98,35 +118,143 @@ function renderProducts() {
 
 // ===== MODAL TOP UP =====
 function openTopUpModal(product) {
+    currentTopUpProduct = product;
+    currentTopUpNominal = null;
+    currentTopUpMethod = 'Saldo';
+    idVerified = false;
+    verifiedNickname = '';
+
     modalGameTitle.textContent = 'Top Up ' + product.game;
     modalGameImage.src = product.img;
     modalGameImage.onerror = function() { this.src = 'https://via.placeholder.com/60x60/14243b/00b4ff?text=' + product.game; };
     modalGameName.textContent = product.game;
+
+    // Reset form ID
+    const needsServer = gamesNeedServerId.includes(product.game);
+    topupServerId.style.display = needsServer ? 'block' : 'none';
+    topupUserId.placeholder = `User ID ${product.game}`;
+    const saved = savedGameIds[product.game];
+    topupUserId.value = saved ? saved.userId : '';
+    topupServerId.value = saved && saved.serverId ? saved.serverId : '';
+    idCheckResult.className = 'id-check-result';
+    idCheckResult.innerHTML = '';
+    checkIdBtn.disabled = false;
+    checkIdBtn.innerHTML = '<i class="fas fa-magnifying-glass"></i> Cek ID';
+
+    // Reset nominal & payment
+    paymentChipGroup.querySelectorAll('.pay-chip').forEach(chip => chip.classList.toggle('active', chip.dataset.method === 'Saldo'));
+    topupSummary.style.display = 'none';
+
+    renderNominalList(product);
+    modal.classList.add('active');
+}
+
+function renderNominalList(product) {
     const nominalData = topUpNominal[product.game] || [];
     nominalList.innerHTML = '';
     nominalData.forEach(nom => {
         const btn = document.createElement('button');
         btn.className = 'nominal-btn';
-        btn.innerHTML = `${nom.label} <span class="nominal-price">Rp ${nom.value.toLocaleString('id-ID')}</span>`;
+        btn.type = 'button';
+        btn.innerHTML = `
+            ${nom.tag ? `<span class="nominal-tag ${nom.tag === 'Hemat' ? 'hemat' : ''}">${nom.tag}</span>` : ''}
+            ${nom.label}
+            <span class="nominal-price">Rp ${nom.value.toLocaleString('id-ID')}</span>
+            ${nom.original ? `<span class="nominal-original">Rp ${nom.original.toLocaleString('id-ID')}</span>` : ''}
+        `;
         btn.addEventListener('click', () => {
-            const cartItem = {
-                id: Date.now() + Math.random(),
-                name: `Top Up ${product.game} ${nom.label}`,
-                category: 'Top Up',
-                price: nom.value,
-                img: product.img,
-                qty: 1,
-                isTopUp: true,
-                game: product.game,
-                nominal: nom.value
-            };
-            addToCart(cartItem);
-            closeModal();
+            if (!idVerified) {
+                showToast('Cek ID akun dulu sebelum pilih nominal');
+                return;
+            }
+            currentTopUpNominal = nom;
+            nominalList.querySelectorAll('.nominal-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            summaryNominal.textContent = `${nom.label} (${product.game})`;
+            summaryTotal.textContent = `Rp ${nom.value.toLocaleString('id-ID')}`;
+            topupSummary.style.display = 'block';
         });
         nominalList.appendChild(btn);
     });
-    modal.classList.add('active');
 }
+
+// ===== CEK ID / NICKNAME =====
+checkIdBtn.addEventListener('click', () => {
+    const userId = topupUserId.value.trim();
+    const needsServer = currentTopUpProduct && gamesNeedServerId.includes(currentTopUpProduct.game);
+    const serverId = topupServerId.value.trim();
+
+    if (!userId || (needsServer && !serverId)) {
+        idCheckResult.className = 'id-check-result show error';
+        idCheckResult.innerHTML = `<i class="fas fa-circle-exclamation"></i> ${needsServer ? 'User ID & Zone ID wajib diisi' : 'User ID wajib diisi'}`;
+        idVerified = false;
+        return;
+    }
+
+    idVerified = false;
+    checkIdBtn.disabled = true;
+    checkIdBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengecek...';
+    idCheckResult.className = 'id-check-result show loading';
+    idCheckResult.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memeriksa ID akun...';
+
+    setTimeout(() => {
+        // Simulasi hasil cek nickname (tidak ada API game resmi yang tersambung)
+        const fakeNicknames = ['ShadowXR', 'NightRezzky', 'ProGamerID', 'XR_Legend', 'DarkKnight07', 'CyberBlade'];
+        verifiedNickname = fakeNicknames[Math.floor(Math.random() * fakeNicknames.length)] + '_' + userId.slice(-3);
+        idVerified = true;
+        checkIdBtn.disabled = false;
+        checkIdBtn.innerHTML = '<i class="fas fa-rotate"></i> Cek Ulang';
+        idCheckResult.className = 'id-check-result show success';
+        idCheckResult.innerHTML = `<i class="fas fa-circle-check"></i> ID ditemukan: <strong>${verifiedNickname}</strong>`;
+
+        // Simpan ID untuk kemudahan berikutnya
+        savedGameIds[currentTopUpProduct.game] = { userId, serverId: needsServer ? serverId : '' };
+        localStorage.setItem('xrezzky_game_ids', JSON.stringify(savedGameIds));
+    }, 900);
+});
+
+// ===== PILIH METODE BAYAR =====
+paymentChipGroup.addEventListener('click', (e) => {
+    const chip = e.target.closest('.pay-chip');
+    if (!chip) return;
+    paymentChipGroup.querySelectorAll('.pay-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentTopUpMethod = chip.dataset.method;
+});
+
+// ===== PROSES TOP UP =====
+processTopupBtn.addEventListener('click', () => {
+    if (!idVerified) { showToast('Cek ID akun dulu sebelum memproses'); return; }
+    if (!currentTopUpNominal) { showToast('Pilih nominal top up dulu'); return; }
+
+    const product = currentTopUpProduct;
+    const nom = currentTopUpNominal;
+    const needsServer = gamesNeedServerId.includes(product.game);
+    const accountLabel = needsServer
+        ? `${topupUserId.value.trim()} (${topupServerId.value.trim()})`
+        : topupUserId.value.trim();
+
+    const transaction = {
+        id: Date.now(),
+        type: 'Top Up',
+        items: [{ name: `Top Up ${product.game} ${nom.label}`, qty: 1, price: nom.value }],
+        total: nom.value,
+        status: 'Sukses',
+        date: new Date().toLocaleString('id-ID'),
+        method: currentTopUpMethod,
+        game: product.game,
+        accountId: accountLabel,
+        nickname: verifiedNickname
+    };
+    transactions.push(transaction);
+    saveTransactions();
+
+    showToast(`Top Up ${product.game} ${nom.label} untuk ${verifiedNickname} berhasil!`);
+    updateHistory();
+    updateCustomerStats();
+    closeModal();
+});
+
 function closeModal() { modal.classList.remove('active'); }
 modalClose.addEventListener('click', closeModal);
 modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
@@ -328,6 +456,7 @@ function updateHistory() {
                 <span class="h-title">${t.type}</span>
                 <span class="h-desc">${t.date} • ${t.method || 'Transfer'}</span>
                 ${t.items ? t.items.map(i => `${i.name} (${i.qty})`).join(', ') : ''}
+                ${t.type === 'Top Up' && t.accountId ? `<br><span class="h-desc">ID: ${t.accountId}${t.nickname ? ' • ' + t.nickname : ''}</span>` : ''}
             </div>
             <div class="h-right"><span>Rp ${t.total.toLocaleString('id-ID')}</span><span class="h-status">${t.status}</span></div>
         </div>
@@ -352,6 +481,43 @@ document.querySelectorAll('.nav-links a').forEach(link => {
         this.classList.add('active');
     });
 });
+
+// ===== HERO VIDEO BANNER (AUTOPLAY + IKUT RASIO ASLI VIDEO) =====
+const heroSection = document.querySelector('.hero');
+const heroVideo = document.querySelector('.hero-video');
+
+function updateHeroHeight() {
+    if (!heroSection || !heroVideo || !heroVideo.videoWidth || !heroVideo.videoHeight) return;
+    const ratio = heroVideo.videoHeight / heroVideo.videoWidth;
+    const width = heroSection.offsetWidth;
+    let height = width * ratio;
+    // batasi biar tetap enak dilihat, tapi ngikutin bentuk asli video (bukan dipaksa 100vh)
+    height = Math.max(420, Math.min(height, window.innerHeight * 0.95));
+    heroSection.style.minHeight = height + 'px';
+}
+
+function tryPlayHeroVideo() {
+    if (!heroVideo) return;
+    const playPromise = heroVideo.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(() => {
+            // Sebagian browser mobile blokir autoplay sampai ada interaksi user
+            const resume = () => heroVideo.play();
+            document.addEventListener('touchstart', resume, { once: true });
+            document.addEventListener('click', resume, { once: true });
+        });
+    }
+}
+
+if (heroVideo) {
+    if (heroVideo.readyState >= 1) updateHeroHeight();
+    heroVideo.addEventListener('loadedmetadata', updateHeroHeight);
+    window.addEventListener('resize', updateHeroHeight);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) tryPlayHeroVideo();
+    });
+    tryPlayHeroVideo();
+}
 
 // ===== INIT =====
 renderProducts();

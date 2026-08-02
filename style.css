@@ -89,12 +89,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /* ===== HERO / BANNER FULL WIDTH ===== */
 .hero {
     position: relative;
-    min-height: 100vh;
+    min-height: 480px;
     width: 100%;
     display: flex;
     align-items: center;
     padding: 80px 0 60px;
     overflow: hidden;
+    transition: min-height 0.35s ease;
 }
 .hero-video-wrapper {
     position: absolute;
@@ -372,6 +373,113 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     color: #00b4ff;
     font-size: 0.9rem;
     margin-top: 4px;
+}
+
+/* ===== TOP UP: ID ACCOUNT & CEK NICKNAME ===== */
+.topup-id-group { margin-bottom: 18px; }
+.topup-id-group label {
+    display: block;
+    font-size: 0.82rem;
+    color: #8899bb;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.id-input-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.id-input-row input {
+    flex: 1;
+    min-width: 120px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 0.92rem;
+}
+.id-input-row input::placeholder { color: #5c6f8f; }
+.id-input-row input:focus { border-color: #00b4ff; outline: none; }
+.btn-check-id {
+    background: rgba(0, 180, 255, 0.12);
+    border: 1px solid rgba(0, 180, 255, 0.3);
+    color: #00b4ff;
+    padding: 0 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: 0.25s ease;
+}
+.btn-check-id:hover { background: rgba(0, 180, 255, 0.2); }
+.btn-check-id:disabled { opacity: 0.55; cursor: not-allowed; }
+.id-check-result {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    padding: 10px 12px;
+    border-radius: 10px;
+}
+.id-check-result.show { display: flex; }
+.id-check-result.success { background: rgba(46, 213, 115, 0.1); border: 1px solid rgba(46, 213, 115, 0.3); color: #2ed573; }
+.id-check-result.error { background: rgba(255, 77, 109, 0.1); border: 1px solid rgba(255, 77, 109, 0.3); color: #ff4d6d; }
+.id-check-result.loading { background: rgba(0, 180, 255, 0.08); border: 1px solid rgba(0, 180, 255, 0.25); color: #00b4ff; }
+
+/* ===== TOP UP: NOMINAL BADGE ===== */
+.nominal-btn { position: relative; }
+.nominal-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+.nominal-btn.active { border-color: #00b4ff; background: rgba(0, 180, 255, 0.12); color: #fff; }
+.nominal-btn .nominal-original {
+    display: block;
+    font-size: 0.7rem;
+    color: #5c6f8f;
+    text-decoration: line-through;
+    margin-top: 2px;
+}
+.nominal-tag {
+    position: absolute;
+    top: -8px;
+    right: 8px;
+    background: #00b4ff;
+    color: #0a1628;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+}
+.nominal-tag.hemat { background: #ffb347; }
+
+/* ===== TOP UP: SUMMARY & PAYMENT ===== */
+.topup-summary {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 0.9rem;
+    color: #b0c4de;
+    gap: 10px;
+}
+.summary-row.total { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 16px; }
+.payment-chip-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.pay-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #b0c4de;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: 0.25s ease;
+}
+.pay-chip.active { background: #00b4ff; border-color: #00b4ff; color: #0a1628; }
+@media (max-width: 480px) {
+    .id-input-row input[data-role="server"] { min-width: 90px; }
+    .btn-check-id { flex: 1 1 100%; padding: 10px 0; }
 }
 
 /* ===== DEPOSIT ===== */

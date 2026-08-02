@@ -34,7 +34,7 @@
     <!-- ===== HERO / BANNER VIDEO (FULL WIDTH + AUTOPLAY) ===== -->
     <section class="hero" id="home">
         <div class="hero-video-wrapper">
-            <video class="hero-video" autoplay muted loop playsinline>
+            <video class="hero-video" autoplay muted loop playsinline preload="auto">
                 <source src="VIDEO/banner.mp4" type="video/mp4" />
             </video>
             <div class="hero-overlay"></div>
@@ -204,7 +204,31 @@
                     <img id="modalGameImage" src="" alt="Game" />
                     <span id="modalGameName">Game Name</span>
                 </div>
+
+                <div class="topup-id-group">
+                    <label>Masukkan ID Akun</label>
+                    <div class="id-input-row">
+                        <input type="text" id="topupUserId" placeholder="User ID" data-role="user" />
+                        <input type="text" id="topupServerId" placeholder="Zone ID" data-role="server" style="display:none;" />
+                        <button class="btn-check-id" id="checkIdBtn" type="button"><i class="fas fa-magnifying-glass"></i> Cek ID</button>
+                    </div>
+                    <div class="id-check-result" id="idCheckResult"></div>
+                </div>
+
                 <div class="modal-nominal-list" id="nominalList"></div>
+
+                <div class="topup-summary" id="topupSummary" style="display:none;">
+                    <div class="summary-row"><span>Nominal</span><span id="summaryNominal">-</span></div>
+                    <div class="summary-row">
+                        <span>Metode Bayar</span>
+                        <div class="payment-chip-group" id="paymentChipGroup">
+                            <button class="pay-chip active" data-method="Saldo" type="button">Saldo</button>
+                            <button class="pay-chip" data-method="QRIS" type="button">QRIS</button>
+                        </div>
+                    </div>
+                    <div class="summary-row total"><span>Total Bayar</span><span id="summaryTotal">Rp 0</span></div>
+                    <button class="btn-primary full" id="processTopupBtn" type="button"><i class="fas fa-bolt"></i> Proses Top Up</button>
+                </div>
             </div>
         </div>
     </div>
