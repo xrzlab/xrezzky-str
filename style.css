@@ -375,6 +375,26 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     margin-top: 4px;
 }
 
+/* ===== TOP UP: CATEGORY TABS ===== */
+.nominal-category-tabs {
+    display: none;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.cat-tab {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #b0c4de;
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: 0.25s ease;
+}
+.cat-tab.active { background: #00b4ff; border-color: #00b4ff; color: #0a1628; }
+.modal-nominal-list { max-height: 320px; overflow-y: auto; }
+
 /* ===== TOP UP: ID ACCOUNT & CEK NICKNAME ===== */
 .topup-id-group { margin-bottom: 18px; }
 .topup-id-group label {

@@ -2,28 +2,245 @@
 const productData = [
     { id: 1, name: 'Top Up Free Fire', category: 'Top Up', price: 0, img: 'IMAGES/topup_ff.jpg', isTopUp: true, game: 'Free Fire' },
     { id: 2, name: 'Top Up Mobile Legends', category: 'Top Up', price: 0, img: 'IMAGES/topup_ml.jpg', isTopUp: true, game: 'Mobile Legends' },
-    { id: 3, name: 'Top Up Block Strike', category: 'Top Up', price: 0, img: 'IMAGES/topup_bs.jpg', isTopUp: true, game: 'Block Strike' },
-    { id: 4, name: 'Top Up PUBG', category: 'Top Up', price: 0, img: 'IMAGES/topup_pubg.jpg', isTopUp: true, game: 'PUBG' },
+    { id: 3, name: 'Top Up Blood Strike', category: 'Top Up', price: 0, img: 'IMAGES/topup_bs.jpg', isTopUp: true, game: 'Blood Strike' },
+    { id: 4, name: 'Top Up PUBG Mobile', category: 'Top Up', price: 0, img: 'IMAGES/topup_pubg.jpg', isTopUp: true, game: 'PUBG Mobile' },
     { id: 5, name: 'Top Up Roblox', category: 'Top Up', price: 0, img: 'IMAGES/topup_roblox.jpg', isTopUp: true, game: 'Roblox' },
     { id: 6, name: 'Top Up Among Us (SUS)', category: 'Top Up', price: 0, img: 'IMAGES/topup_sus.jpg', isTopUp: true, game: 'Among Us' },
+    { id: 7, name: 'Top Up PUBG New State', category: 'Top Up', price: 0, img: 'IMAGES/topup_pubgns.jpg', isTopUp: true, game: 'PUBG New State' },
     { id: 7, name: 'Akun Valorant Tier 3', category: 'Akun', price: 180000, img: 'IMAGES/akunvalorant.jpg', isTopUp: false },
     { id: 8, name: 'Voucher Shopee 100K', category: 'Voucher', price: 95000, img: 'IMAGES/vouchersg.jpg', isTopUp: false },
     { id: 9, name: 'Jasa Desain Logo', category: 'Jasa', price: 150000, img: 'IMAGES/jasadisain.jpg', isTopUp: false },
     { id: 10, name: 'Jasa Pembuatan Website', category: 'Jasa', price: 450000, img: 'IMAGES/jasaweb.jpg', isTopUp: false }
 ];
 
-// ===== NOMINAL TOP UP =====
-const topUpNominal = {
-    'Free Fire': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Hemat', original: 23000 }, { label: '50.000', value: 50000, tag: 'Populer', original: 55000 }, { label: '100.000', value: 100000 }],
-    'Mobile Legends': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Hemat', original: 23000 }, { label: '50.000', value: 50000, tag: 'Populer', original: 55000 }, { label: '100.000', value: 100000 }],
-    'Block Strike': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Populer' }, { label: '50.000', value: 50000 }],
-    'PUBG': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Hemat', original: 23000 }, { label: '50.000', value: 50000, tag: 'Populer', original: 55000 }, { label: '100.000', value: 100000 }],
-    'Roblox': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Hemat', original: 23000 }, { label: '50.000', value: 50000, tag: 'Populer', original: 55000 }, { label: '100.000', value: 100000 }],
-    'Among Us': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000, tag: 'Populer' }, { label: '50.000', value: 50000 }]
+// ===== KATALOG TOP UP LENGKAP (harga sudah +500 markup dari harga supplier) =====
+const topUpCatalog = {
+    'Mobile Legends': {
+        needsServer: true,
+        categories: {
+            'Diamond': [
+                { label: '5 Diamond', value: 2009 },
+                { label: '12 Diamond', value: 3926 },
+                { label: '14 Diamond (13+1)', value: 4430 },
+                { label: '19 Diamond (17+2)', value: 5853 },
+                { label: '28 Diamond (26+2)', value: 8226 },
+                { label: '36 Diamond (33+3)', value: 10214 },
+                { label: '45 Diamond (41+4)', value: 13318 },
+                { label: '50 Diamond (46+4)', value: 14024 },
+                { label: '59 Diamond (53+6)', value: 16093 },
+                { label: '67 Diamond (62+5)', value: 18262 },
+                { label: '70 Diamond (64+7)', value: 19184 },
+                { label: '85 Diamond (77+8)', value: 22480 },
+                { label: '100 Diamond (92+8)', value: 26726 },
+                { label: '112 Diamond (102+10)', value: 30059 },
+                { label: '140 Diamond (127+13)', value: 37095 },
+                { label: '145 Diamond (131+14)', value: 39044 },
+                { label: '170 Diamond (154+16)', value: 44410 },
+                { label: '185 Diamond (169+16)', value: 48636 },
+                { label: '222 Diamond (200+22)', value: 57593 },
+                { label: '240 Diamond (217+23)', value: 62342 },
+                { label: '257 Diamond (234+23)', value: 67004 },
+                { label: '284 Diamond (254+30)', value: 73754 },
+                { label: '296 Diamond (256+40)', value: 75920 },
+                { label: '344 Diamond (312+32)', value: 89459 },
+                { label: '355 Diamond (317+38)', value: 91771 },
+                { label: '408 Diamond (367+41)', value: 105332 },
+                { label: '429 Diamond (390+39)', value: 110877 },
+                { label: '460 Diamond (414+46)', value: 119066 },
+                { label: '514 Diamond (468+46)', value: 132710 },
+                { label: '568 Diamond (503+65)', value: 143465 },
+                { label: '600 Diamond (546+55)', value: 151989 },
+                { label: '706 Diamond (625+81)', value: 178999 },
+                { label: '875 Diamond (774+101)', value: 219676 },
+                { label: '963 Diamond (859+104)', value: 238546 },
+                { label: '1.050 Diamond (937+113)', value: 260564 },
+                { label: '1.136 Diamond (990+146)', value: 282017 },
+                { label: '1.220 Diamond (1093+127)', value: 303707 },
+                { label: '1.412 Diamond (1250+162)', value: 352870 },
+                { label: '2.010 Diamond (1780+302)', value: 475296 },
+                { label: '2.195 Diamond (1860+335)', value: 523181 },
+                { label: '2.901 Diamond (2485+416)', value: 698839 },
+                { label: '3.688 Diamond (3099+589)', value: 893326 },
+                { label: '4.394 Diamond (3724+670)', value: 1046963 },
+                { label: '5.532 Diamond (4649+883)', value: 1316954 },
+                { label: '7.720 Diamond (6509+1218)', value: 1836200 },
+                { label: '9.288 Diamond (7740+1548)', value: 2200417 },
+                { label: '12.976 Diamond (10877+2099)', value: 3068001 },
+                { label: '16.080 Diamond (13664+2416)', value: 3795378 },
+                { label: '27.864 Diamond (23232+4632)', value: 6587085 }
+            ],
+            'Weekly': [
+                { label: 'Weekly Elite Bundle', value: 14250 },
+                { label: 'Weekly Diamond Pass', value: 27900, tag: 'Populer' },
+                { label: 'Weekly 2x (440 Diamond)', value: 55967 },
+                { label: 'Weekly 3x (660 Diamond)', value: 83654 },
+                { label: 'Weekly 4x (880 Diamond)', value: 111339 },
+                { label: 'Weekly 5x (1.100 Diamond)', value: 139026 }
+            ],
+            'First TopUp': [
+                { label: 'First TopUp 50 Diamond', value: 15638, tag: 'Hemat' },
+                { label: 'First TopUp 150 Diamond', value: 45478 },
+                { label: 'First TopUp 250 Diamond', value: 75422 },
+                { label: 'First TopUp 500 Diamond', value: 150897 }
+            ]
+        }
+    },
+    'Free Fire': {
+        needsServer: false,
+        categories: {
+            'Diamond': [
+                { label: '5 Diamond', value: 1370 },
+                { label: '10 Diamond', value: 2165 },
+                { label: '20 Diamond', value: 3756 },
+                { label: '25 Diamond', value: 4551 },
+                { label: '30 Diamond', value: 5345 },
+                { label: '50 Diamond', value: 6900, tag: 'Populer' },
+                { label: '55 Diamond', value: 7698 },
+                { label: '60 Diamond', value: 8495 },
+                { label: '70 Diamond', value: 9089 },
+                { label: '75 Diamond', value: 9868 },
+                { label: '80 Diamond', value: 10706 },
+                { label: '100 Diamond', value: 13296 },
+                { label: '120 Diamond', value: 15465 },
+                { label: '140 Diamond', value: 17607 },
+                { label: '145 Diamond', value: 18460 },
+                { label: '150 Diamond', value: 19167 },
+                { label: '160 Diamond', value: 21143 },
+                { label: '190 Diamond', value: 24024 },
+                { label: '210 Diamond', value: 26137 },
+                { label: '250 Diamond', value: 31747 },
+                { label: '280 Diamond', value: 34970 },
+                { label: '355 Diamond', value: 43165 },
+                { label: '375 Diamond', value: 46486 },
+                { label: '400 Diamond', value: 49513 },
+                { label: '425 Diamond', value: 51605 },
+                { label: '475 Diamond', value: 58035 },
+                { label: '500 Diamond', value: 61024, tag: 'Hemat' },
+                { label: '635 Diamond', value: 77938 },
+                { label: '720 Diamond', value: 86531 },
+                { label: '800 Diamond', value: 95911 },
+                { label: '1.000 Diamond', value: 120906 },
+                { label: '1.450 Diamond', value: 170883 },
+                { label: '1.800 Diamond', value: 214165 },
+                { label: '2.000 Diamond', value: 237804 },
+                { label: '2.140 Diamond', value: 254849 },
+                { label: '2.720 Diamond', value: 322672 },
+                { label: '4.000 Diamond', value: 471243 },
+                { label: '7.290 Diamond', value: 856463 }
+            ],
+            'Membership': [
+                { label: 'Membership Mingguan', value: 27099 },
+                { label: 'Boyah Pass', value: 41048, tag: 'Populer' },
+                { label: 'Membership Bulanan', value: 79649 }
+            ],
+            'Level Up Pass': [
+                { label: 'Level 6', value: 5635 },
+                { label: 'Level 10', value: 8997 },
+                { label: 'Level 15', value: 8997 },
+                { label: 'Level 20', value: 8997 },
+                { label: 'Level 25', value: 9105 },
+                { label: 'Level 30', value: 14054 }
+            ]
+        }
+    },
+    'PUBG Mobile': {
+        needsServer: false,
+        categories: {
+            'UC': [
+                { label: '60 UC', value: 15538 },
+                { label: '120 UC', value: 30496 },
+                { label: '240 UC', value: 60428 },
+                { label: '300 UC', value: 73870, tag: 'Populer' },
+                { label: '385 UC', value: 90693 },
+                { label: '445 UC', value: 105651 },
+                { label: '505 UC', value: 120609 },
+                { label: '565 UC', value: 135568 },
+                { label: '600 UC', value: 147168 },
+                { label: '720 UC', value: 165831 },
+                { label: '840 UC', value: 195926 },
+                { label: '900 UC', value: 210706 },
+                { label: '1.500 UC', value: 346025 },
+                { label: '1.800 UC', value: 376636 },
+                { label: '2.125 UC', value: 451776 },
+                { label: '2.460 UC', value: 526914 },
+                { label: '3.850 UC', value: 752678 },
+                { label: '4.030 UC', value: 798547 },
+                { label: '4.175 UC', value: 827817 },
+                { label: '4.510 UC', value: 903950 },
+                { label: '4.835 UC', value: 979089 },
+                { label: '5.170 UC', value: 1054227 },
+                { label: '5.650 UC', value: 1129714 },
+                { label: '5.975 UC', value: 1204853 },
+                { label: '6.310 UC', value: 1279991 },
+                { label: '6.635 UC', value: 1319958 },
+                { label: '6.970 UC', value: 1393256 },
+                { label: '8.100 UC', value: 1469487 },
+                { label: '32.400 UC', value: 5953095 },
+                { label: '89.100 UC', value: 14689743 }
+            ]
+        }
+    },
+    'Among Us': {
+        needsServer: false,
+        categories: {
+            'Golden': [
+                { label: '100 Golden', value: 11620 },
+                { label: '310 Golden', value: 32323, tag: 'Populer' },
+                { label: '520 Golden', value: 53651 },
+                { label: '1.060 Golden', value: 106675 },
+                { label: '2.180 Golden', value: 270704 },
+                { label: '5.600 Golden', value: 693165 }
+            ],
+            'Membership': [
+                { label: 'Weekly Card', value: 14454, tag: 'Hemat' },
+                { label: 'Super Pass', value: 65442 },
+                { label: 'Super Pass Bundle', value: 132040 },
+                { label: 'Monthly Card', value: 171884 },
+                { label: 'Super VIP Card', value: 187419 }
+            ]
+        }
+    },
+    'Blood Strike': {
+        needsServer: false,
+        categories: {
+            'Gold': [
+                { label: '100 Gold', value: 13464 },
+                { label: '300 Gold', value: 41200, tag: 'Populer' },
+                { label: '500 Gold', value: 69069 },
+                { label: '1.000 Gold', value: 129510 },
+                { label: '2.000 Gold', value: 258495 },
+                { label: '5.000 Gold', value: 645238 }
+            ]
+        }
+    },
+    'PUBG New State': {
+        needsServer: false,
+        categories: {
+            'NC': [
+                { label: '300 NC', value: 16725 },
+                { label: '1.500 + 80 NC', value: 80414, tag: 'Populer' },
+                { label: '3.600 + 250 NC', value: 190365 },
+                { label: '9.300 + 930 NC', value: 490056 },
+                { label: '15.000 + 1.800 NC', value: 791176 },
+                { label: '30.000 + 5.000 NC', value: 1610593 }
+            ]
+        }
+    },
+    'Roblox': {
+        needsServer: false,
+        categories: {
+            'Robux': [
+                { label: '10.000', value: 10500 },
+                { label: '20.000', value: 20500, tag: 'Hemat', original: 23000 },
+                { label: '50.000', value: 50500, tag: 'Populer', original: 55000 },
+                { label: '100.000', value: 100500 }
+            ]
+        }
+    }
 };
 
 // Game yang butuh Zone ID / Server ID selain User ID
-const gamesNeedServerId = ['Mobile Legends'];
+const gamesNeedServerId = Object.keys(topUpCatalog).filter(g => topUpCatalog[g].needsServer);
 
 // ===== STATE =====
 let products = JSON.parse(localStorage.getItem('xrezzky_products')) || productData;
@@ -58,6 +275,7 @@ const modalGameTitle = document.getElementById('modalGameTitle');
 const modalGameImage = document.getElementById('modalGameImage');
 const modalGameName = document.getElementById('modalGameName');
 const nominalList = document.getElementById('nominalList');
+const nominalCategoryTabs = document.getElementById('nominalCategoryTabs');
 const topupUserId = document.getElementById('topupUserId');
 const topupServerId = document.getElementById('topupServerId');
 const checkIdBtn = document.getElementById('checkIdBtn');
@@ -117,6 +335,8 @@ function renderProducts() {
 }
 
 // ===== MODAL TOP UP =====
+let currentTopUpCategory = null;
+
 function openTopUpModal(product) {
     currentTopUpProduct = product;
     currentTopUpNominal = null;
@@ -145,12 +365,39 @@ function openTopUpModal(product) {
     paymentChipGroup.querySelectorAll('.pay-chip').forEach(chip => chip.classList.toggle('active', chip.dataset.method === 'Saldo'));
     topupSummary.style.display = 'none';
 
+    const catalog = topUpCatalog[product.game];
+    const categories = catalog ? Object.keys(catalog.categories) : [];
+    currentTopUpCategory = categories[0] || null;
+    renderCategoryTabs(product, categories);
     renderNominalList(product);
     modal.classList.add('active');
 }
 
+function renderCategoryTabs(product, categories) {
+    if (categories.length <= 1) {
+        nominalCategoryTabs.style.display = 'none';
+        nominalCategoryTabs.innerHTML = '';
+        return;
+    }
+    nominalCategoryTabs.style.display = 'flex';
+    nominalCategoryTabs.innerHTML = categories.map(cat =>
+        `<button type="button" class="cat-tab ${cat === currentTopUpCategory ? 'active' : ''}" data-cat="${cat}">${cat}</button>`
+    ).join('');
+    nominalCategoryTabs.querySelectorAll('.cat-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            currentTopUpCategory = tab.dataset.cat;
+            nominalCategoryTabs.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentTopUpNominal = null;
+            topupSummary.style.display = 'none';
+            renderNominalList(product);
+        });
+    });
+}
+
 function renderNominalList(product) {
-    const nominalData = topUpNominal[product.game] || [];
+    const catalog = topUpCatalog[product.game];
+    const nominalData = (catalog && currentTopUpCategory) ? (catalog.categories[currentTopUpCategory] || []) : [];
     nominalList.innerHTML = '';
     nominalData.forEach(nom => {
         const btn = document.createElement('button');
