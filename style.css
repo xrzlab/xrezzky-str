@@ -375,6 +375,168 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     margin-top: 4px;
 }
 
+/* ===== AUTH: PROFILE CHIP DI NAVBAR ===== */
+.profile-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 30px;
+    padding: 6px 14px 6px 6px;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+.profile-chip:hover { background: rgba(0, 180, 255, 0.12); border-color: rgba(0, 180, 255, 0.3); }
+.profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00b4ff, #0066ff);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.profile-info { display: flex; flex-direction: column; line-height: 1.25; }
+.profile-name { font-size: 0.82rem; font-weight: 600; color: #fff; }
+.profile-balance { font-size: 0.75rem; color: #00b4ff; font-weight: 600; }
+
+/* ===== AUTH: TABS & FORM ===== */
+.auth-tabs { display: flex; gap: 8px; margin-bottom: 20px; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 4px; }
+.auth-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #8899bb;
+    padding: 10px;
+    border-radius: 9px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.25s ease;
+}
+.auth-tab.active { background: #00b4ff; color: #0a1628; }
+.auth-form .form-group { margin-bottom: 16px; }
+.auth-form label { display: block; font-size: 0.82rem; color: #8899bb; margin-bottom: 8px; font-weight: 500; }
+.auth-form input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 0.92rem;
+}
+.auth-form input:focus { border-color: #00b4ff; outline: none; }
+.auth-error { color: #ff4d6d; font-size: 0.85rem; margin-bottom: 12px; min-height: 1em; }
+
+/* ===== PROFIL MODAL ===== */
+.profile-card { text-align: center; padding: 10px 0 20px; }
+.profile-avatar-big {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00b4ff, #0066ff);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin: 0 auto 14px;
+}
+.profile-card h4 { color: #fff; font-size: 1.15rem; margin-bottom: 4px; }
+.profile-card p { color: #8899bb; font-size: 0.88rem; }
+.balance-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 180, 255, 0.1);
+    border: 1px solid rgba(0, 180, 255, 0.25);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+}
+.balance-box span { color: #b0c4de; font-size: 0.88rem; }
+.balance-box strong { color: #00b4ff; font-size: 1.3rem; }
+.profile-actions { display: flex; flex-direction: column; gap: 10px; }
+
+/* ===== DEPOSIT: LOGIN GATE ===== */
+.login-gate {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 50px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+}
+.login-gate i { font-size: 2.4rem; color: #00b4ff; }
+.login-gate p { color: #b0c4de; font-size: 0.95rem; max-width: 320px; }
+
+/* ===== HALAMAN TOP UP (bukan popup — slide masuk sebagai halaman) ===== */
+.topup-page {
+    position: fixed;
+    inset: 0;
+    background: #0a1628;
+    z-index: 3000;
+    transform: translateX(100%);
+    transition: transform 0.35s ease;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.topup-page.active { transform: translateX(0); }
+.tp-page-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: #0a1628;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.tp-back-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: 0.25s ease;
+}
+.tp-back-btn:hover { background: rgba(0, 180, 255, 0.15); border-color: rgba(0, 180, 255, 0.3); }
+.tp-page-header h3 { color: #fff; font-size: 1.1rem; font-weight: 700; }
+.tp-banner {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    background: #14243b;
+}
+.tp-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tp-banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 22, 40, 0.95), rgba(10, 22, 40, 0.2));
+}
+.tp-banner-text { position: absolute; left: 20px; bottom: 16px; right: 20px; }
+.tp-banner-text span { display: block; color: #fff; font-size: 1.4rem; font-weight: 800; }
+.tp-banner-text p { color: #b0c4de; font-size: 0.85rem; margin-top: 2px; }
+.tp-body { padding: 24px 20px 60px; max-width: 700px; }
+.tp-body .modal-nominal-list { max-height: none; overflow: visible; }
+
 /* ===== TOP UP: CATEGORY TABS ===== */
 .nominal-category-tabs {
     display: none;
@@ -393,7 +555,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     transition: 0.25s ease;
 }
 .cat-tab.active { background: #00b4ff; border-color: #00b4ff; color: #0a1628; }
-.modal-nominal-list { max-height: 320px; overflow-y: auto; }
 
 /* ===== TOP UP: ID ACCOUNT & CEK NICKNAME ===== */
 .topup-id-group { margin-bottom: 18px; }
@@ -500,6 +661,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 @media (max-width: 480px) {
     .id-input-row input[data-role="server"] { min-width: 90px; }
     .btn-check-id { flex: 1 1 100%; padding: 10px 0; }
+    .profile-info { display: none; }
+    .profile-chip { padding: 6px; }
 }
 
 /* ===== DEPOSIT ===== */

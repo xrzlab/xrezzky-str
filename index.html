@@ -25,6 +25,14 @@
                 <a href="#contact">Kontak</a>
             </nav>
             <div class="nav-actions">
+                <button class="btn-icon" id="authBtn" title="Masuk / Daftar"><i class="fas fa-user"></i></button>
+                <div class="profile-chip" id="profileChip" style="display:none;">
+                    <div class="profile-avatar" id="profileAvatar">X</div>
+                    <div class="profile-info">
+                        <span class="profile-name" id="profileName">-</span>
+                        <span class="profile-balance" id="profileBalance">Rp 0</span>
+                    </div>
+                </div>
                 <button class="btn-icon" id="cartBtn"><i class="fas fa-shopping-cart"></i><span class="cart-badge" id="cartBadge">0</span></button>
                 <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
             </div>
@@ -75,7 +83,7 @@
                 <h2 class="section-title">Deposit <span class="highlight">QRIS</span></h2>
                 <p class="section-desc">Isi saldo Anda dengan QRIS dinamis. Waktu deposit 5 menit.</p>
             </div>
-            <div class="deposit-wrapper">
+            <div class="deposit-wrapper" id="depositWrapper">
                 <div class="deposit-form">
                     <div class="form-group">
                         <label>Nominal Deposit (Rp)</label>
@@ -111,6 +119,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="login-gate" id="depositLoginGate" style="display:none;">
+                <i class="fas fa-lock"></i>
+                <p>Kamu harus <strong>masuk atau daftar</strong> dulu buat isi saldo.</p>
+                <button class="btn-primary" id="depositLoginBtn" type="button">Masuk / Daftar</button>
             </div>
             <div class="deposit-history" style="margin-top:40px;">
                 <h4 style="margin-bottom:16px;"><i class="fas fa-clock-rotate-left"></i> Riwayat Deposit</h4>
@@ -192,36 +205,38 @@
         </div>
     </aside>
 
-    <!-- ===== MODAL TOP UP ===== -->
-    <div class="modal-overlay" id="topupModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalGameTitle">Top Up Game</h3>
-                <button class="modal-close" id="modalClose">&times;</button>
+    <!-- ===== HALAMAN TOP UP (slide sebagai halaman, bukan popup) ===== -->
+    <div class="topup-page" id="topupModal">
+        <div class="tp-page-header">
+            <button class="tp-back-btn" id="modalClose" type="button"><i class="fas fa-arrow-left"></i></button>
+            <h3 id="modalGameTitle">Top Up Game</h3>
+        </div>
+        <div class="tp-banner">
+            <img id="modalGameImage" src="" alt="Game" />
+            <div class="tp-banner-overlay"></div>
+            <div class="tp-banner-text">
+                <span id="modalGameName">Game Name</span>
+                <p>Isi ulang cepat, aman &amp; harga terbaik</p>
             </div>
-            <div class="modal-body">
-                <div class="modal-game-info">
-                    <img id="modalGameImage" src="" alt="Game" />
-                    <span id="modalGameName">Game Name</span>
+        </div>
+        <div class="tp-body container">
+            <div class="topup-id-group">
+                <label>Masukkan ID Akun</label>
+                <div class="id-input-row">
+                    <input type="text" id="topupUserId" placeholder="User ID" data-role="user" />
+                    <input type="text" id="topupServerId" placeholder="Zone ID" data-role="server" style="display:none;" />
+                    <button class="btn-check-id" id="checkIdBtn" type="button"><i class="fas fa-magnifying-glass"></i> Cek ID</button>
                 </div>
+                <div class="id-check-result" id="idCheckResult"></div>
+            </div>
 
-                <div class="topup-id-group">
-                    <label>Masukkan ID Akun</label>
-                    <div class="id-input-row">
-                        <input type="text" id="topupUserId" placeholder="User ID" data-role="user" />
-                        <input type="text" id="topupServerId" placeholder="Zone ID" data-role="server" style="display:none;" />
-                        <button class="btn-check-id" id="checkIdBtn" type="button"><i class="fas fa-magnifying-glass"></i> Cek ID</button>
-                    </div>
-                    <div class="id-check-result" id="idCheckResult"></div>
-                </div>
+            <div class="nominal-category-tabs" id="nominalCategoryTabs"></div>
 
-                <div class="nominal-category-tabs" id="nominalCategoryTabs"></div>
+            <div class="modal-nominal-list" id="nominalList"></div>
 
-                <div class="modal-nominal-list" id="nominalList"></div>
-
-                <div class="topup-summary" id="topupSummary" style="display:none;">
-                    <div class="summary-row"><span>Nominal</span><span id="summaryNominal">-</span></div>
-                    <div class="summary-row">
+            <div class="topup-summary" id="topupSummary" style="display:none;">
+                <div class="summary-row"><span>Nominal</span><span id="summaryNominal">-</span></div>
+                <div class="summary-row">
                         <span>Metode Bayar</span>
                         <div class="payment-chip-group" id="paymentChipGroup">
                             <button class="pay-chip active" data-method="Saldo" type="button">Saldo</button>
@@ -230,6 +245,76 @@
                     </div>
                     <div class="summary-row total"><span>Total Bayar</span><span id="summaryTotal">Rp 0</span></div>
                     <button class="btn-primary full" id="processTopupBtn" type="button"><i class="fas fa-bolt"></i> Proses Top Up</button>
+                </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL AUTH (MASUK / DAFTAR) ===== -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="authModalTitle">Masuk Akun</h3>
+                <button class="modal-close" id="authModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <button type="button" class="auth-tab active" data-tab="login">Masuk</button>
+                    <button type="button" class="auth-tab" data-tab="register">Daftar</button>
+                </div>
+
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" placeholder="nama@gmail.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Password" required />
+                    </div>
+                    <div class="auth-error" id="loginError"></div>
+                    <button type="submit" class="btn-primary full"><i class="fas fa-right-to-bracket"></i> Masuk</button>
+                </form>
+
+                <form id="registerForm" class="auth-form" style="display:none;">
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="registerName" placeholder="Nama kamu" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Email (Gmail)</label>
+                        <input type="email" id="registerEmail" placeholder="nama@gmail.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="registerPassword" placeholder="Min. 6 karakter" required />
+                    </div>
+                    <div class="auth-error" id="registerError"></div>
+                    <button type="submit" class="btn-primary full"><i class="fas fa-user-plus"></i> Daftar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL PROFIL ===== -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Profil Saya</h3>
+                <button class="modal-close" id="profileModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-card">
+                    <div class="profile-avatar-big" id="profileAvatarBig">X</div>
+                    <h4 id="profileNameBig">-</h4>
+                    <p id="profileEmailBig">-</p>
+                </div>
+                <div class="balance-box">
+                    <span><i class="fas fa-wallet"></i> Saldo Kamu</span>
+                    <strong id="profileBalanceBig">Rp 0</strong>
+                </div>
+                <div class="profile-actions">
+                    <a href="#deposit" class="btn-primary full" id="profileDepositBtn"><i class="fas fa-plus"></i> Isi Saldo</a>
+                    <button class="btn-secondary full" id="logoutBtn" style="border-color:#ff4d6d;color:#ff4d6d;"><i class="fas fa-right-from-bracket"></i> Keluar</button>
                 </div>
             </div>
         </div>

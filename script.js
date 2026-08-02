@@ -251,6 +251,10 @@ let depositTimer = null;
 let depositTimeLeft = 300;
 let currentQrData = null;
 
+// ===== STATE AUTH / AKUN =====
+let users = JSON.parse(localStorage.getItem('xrezzky_users')) || {};
+let currentUserEmail = localStorage.getItem('xrezzky_current_user') || null;
+
 // ===== STATE TOP UP MODAL =====
 let currentTopUpProduct = null;
 let currentTopUpNominal = null;
@@ -371,6 +375,7 @@ function openTopUpModal(product) {
     renderCategoryTabs(product, categories);
     renderNominalList(product);
     modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
 function renderCategoryTabs(product, categories) {
@@ -476,6 +481,15 @@ processTopupBtn.addEventListener('click', () => {
 
     const product = currentTopUpProduct;
     const nom = currentTopUpNominal;
+
+    // Kalau bayar pakai Saldo, wajib login dan saldo harus cukup
+    let user = null;
+    if (currentTopUpMethod === 'Saldo') {
+        if (!isLoggedIn()) { showToast('Masuk / daftar dulu untuk bayar pakai Saldo'); openAuthModal('login'); return; }
+        user = getCurrentUser();
+        if (user.saldo < nom.value) { showToast(`Saldo tidak cukup. Saldo kamu Rp ${user.saldo.toLocaleString('id-ID')}`); return; }
+    }
+
     const needsServer = gamesNeedServerId.includes(product.game);
     const accountLabel = needsServer
         ? `${topupUserId.value.trim()} (${topupServerId.value.trim()})`
@@ -496,15 +510,23 @@ processTopupBtn.addEventListener('click', () => {
     transactions.push(transaction);
     saveTransactions();
 
+    if (currentTopUpMethod === 'Saldo' && user) {
+        user.saldo -= nom.value;
+        saveUsers();
+        updateAuthUI();
+    }
+
     showToast(`Top Up ${product.game} ${nom.label} untuk ${verifiedNickname} berhasil!`);
     updateHistory();
     updateCustomerStats();
     closeModal();
 });
 
-function closeModal() { modal.classList.remove('active'); }
+function closeModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
 modalClose.addEventListener('click', closeModal);
-modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
 // ===== KERANJANG =====
 function addToCart(product) {
@@ -598,6 +620,7 @@ document.getElementById('checkoutBtn').addEventListener('click', () => {
 
 // ===== DEPOSIT =====
 document.getElementById('depositBtn').addEventListener('click', () => {
+    if (!isLoggedIn()) { showToast('Masuk / daftar dulu untuk deposit'); openAuthModal('login'); return; }
     let amount = parseInt(document.getElementById('depositAmount').value);
     if (isNaN(amount) || amount < 1) { showToast('Masukkan nominal yang valid'); return; }
     const method = document.getElementById('depositMethod').value;
@@ -635,6 +658,7 @@ function updateTimerDisplay() {
     document.getElementById('qrTimer').style.color = depositTimeLeft < 60 ? '#ff4d6d' : '#ffb347';
 }
 document.getElementById('confirmDepositBtn').addEventListener('click', () => {
+    if (!isLoggedIn()) { showToast('Masuk / daftar dulu untuk deposit'); openAuthModal('login'); return; }
     if (!currentQrData) { showToast('Tidak ada deposit aktif'); return; }
     if (depositTimeLeft <= 0) { showToast('Waktu deposit habis! Generate ulang.'); return; }
     const dep = currentQrData;
@@ -651,7 +675,14 @@ document.getElementById('confirmDepositBtn').addEventListener('click', () => {
     saveTransactions();
     depositHistory.push({ id: Date.now(), amount: dep.amount, method: dep.method, date: dep.date, status: 'Sukses' });
     saveDeposits();
-    showToast(`Deposit Rp ${dep.amount.toLocaleString('id-ID')} berhasil!`);
+
+    // Tambahkan ke saldo akun yang sedang login
+    const user = getCurrentUser();
+    user.saldo += dep.amount;
+    saveUsers();
+    updateAuthUI();
+
+    showToast(`Deposit Rp ${dep.amount.toLocaleString('id-ID')} berhasil! Saldo sekarang Rp ${user.saldo.toLocaleString('id-ID')}`);
     document.getElementById('qrResult').style.display = 'none';
     document.querySelector('.qr-placeholder').style.display = 'block';
     if (depositTimer) { clearInterval(depositTimer); depositTimer = null; }
@@ -766,9 +797,140 @@ if (heroVideo) {
     tryPlayHeroVideo();
 }
 
+// ===== AUTH / AKUN (disimpan di localStorage, front-end only) =====
+function saveUsers() { localStorage.setItem('xrezzky_users', JSON.stringify(users)); }
+function setCurrentUser(email) {
+    currentUserEmail = email;
+    if (email) localStorage.setItem('xrezzky_current_user', email);
+    else localStorage.removeItem('xrezzky_current_user');
+}
+function getCurrentUser() { return currentUserEmail ? users[currentUserEmail] : null; }
+function isLoggedIn() { return !!getCurrentUser(); }
+function initialOf(name) { return (name || '?').trim().charAt(0).toUpperCase(); }
+
+// Hash sederhana buat ngaburin password di localStorage.
+// CATATAN: ini BUKAN enkripsi aman — semua tersimpan di browser (front-end only, tanpa server).
+// Untuk produksi beneran, password harus divalidasi & di-hash di backend, bukan di browser.
+function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0; }
+    return 'h' + Math.abs(hash).toString(36) + str.length;
+}
+
+function updateAuthUI() {
+    const user = getCurrentUser();
+    const authBtn = document.getElementById('authBtn');
+    const profileChip = document.getElementById('profileChip');
+    if (user) {
+        authBtn.style.display = 'none';
+        profileChip.style.display = 'flex';
+        document.getElementById('profileAvatar').textContent = initialOf(user.name);
+        document.getElementById('profileName').textContent = user.name;
+        document.getElementById('profileBalance').textContent = 'Rp ' + user.saldo.toLocaleString('id-ID');
+    } else {
+        authBtn.style.display = 'flex';
+        profileChip.style.display = 'none';
+    }
+    updateDepositGate();
+}
+
+function updateDepositGate() {
+    const wrapper = document.getElementById('depositWrapper');
+    const gate = document.getElementById('depositLoginGate');
+    if (isLoggedIn()) { wrapper.style.display = 'grid'; gate.style.display = 'none'; }
+    else { wrapper.style.display = 'none'; gate.style.display = 'flex'; }
+}
+
+// ===== MODAL AUTH =====
+const authModal = document.getElementById('authModal');
+const profileModal = document.getElementById('profileModal');
+
+function openAuthModal(tab) {
+    switchAuthTab(tab || 'login');
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('registerError').textContent = '';
+    authModal.classList.add('active');
+}
+function closeAuthModal() { authModal.classList.remove('active'); }
+document.getElementById('authModalClose').addEventListener('click', closeAuthModal);
+authModal.addEventListener('click', (e) => { if (e.target === authModal) closeAuthModal(); });
+
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+}
+document.querySelectorAll('.auth-tab').forEach(tab => {
+    tab.addEventListener('click', () => switchAuthTab(tab.dataset.tab));
+});
+
+document.getElementById('authBtn').addEventListener('click', () => openAuthModal('login'));
+document.getElementById('depositLoginBtn').addEventListener('click', () => openAuthModal('register'));
+
+document.getElementById('registerForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('registerName').value.trim();
+    const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+    const password = document.getElementById('registerPassword').value;
+    const errorEl = document.getElementById('registerError');
+    errorEl.textContent = '';
+
+    if (!name || !email || !password) { errorEl.textContent = 'Semua field wajib diisi'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errorEl.textContent = 'Format email tidak valid'; return; }
+    if (password.length < 6) { errorEl.textContent = 'Password minimal 6 karakter'; return; }
+    if (users[email]) { errorEl.textContent = 'Email sudah terdaftar, silakan masuk'; return; }
+
+    users[email] = { name, email, password: simpleHash(password), saldo: 0, createdAt: new Date().toLocaleString('id-ID') };
+    saveUsers();
+    setCurrentUser(email);
+    closeAuthModal();
+    showToast(`Selamat datang, ${name}!`);
+    updateAuthUI();
+    e.target.reset();
+});
+
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+    const errorEl = document.getElementById('loginError');
+    errorEl.textContent = '';
+
+    const user = users[email];
+    if (!user || user.password !== simpleHash(password)) { errorEl.textContent = 'Email atau password salah'; return; }
+
+    setCurrentUser(email);
+    closeAuthModal();
+    showToast(`Selamat datang kembali, ${user.name}!`);
+    updateAuthUI();
+    e.target.reset();
+});
+
+// ===== MODAL PROFIL =====
+document.getElementById('profileChip').addEventListener('click', () => {
+    const user = getCurrentUser();
+    if (!user) return;
+    document.getElementById('profileAvatarBig').textContent = initialOf(user.name);
+    document.getElementById('profileNameBig').textContent = user.name;
+    document.getElementById('profileEmailBig').textContent = user.email;
+    document.getElementById('profileBalanceBig').textContent = 'Rp ' + user.saldo.toLocaleString('id-ID');
+    profileModal.classList.add('active');
+});
+document.getElementById('profileModalClose').addEventListener('click', () => profileModal.classList.remove('active'));
+profileModal.addEventListener('click', (e) => { if (e.target === profileModal) profileModal.classList.remove('active'); });
+document.getElementById('profileDepositBtn').addEventListener('click', () => profileModal.classList.remove('active'));
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    setCurrentUser(null);
+    profileModal.classList.remove('active');
+    updateAuthUI();
+    showToast('Berhasil keluar');
+});
+
 // ===== INIT =====
 renderProducts();
 updateCartUI();
 updateHistory();
 updateDepositHistory();
 updateCustomerStats();
+updateAuthUI();
