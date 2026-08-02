@@ -1,16 +1,26 @@
-// ===== DATA PRODUK (sesuai nama gambar) =====
+// ===== DATA PRODUK =====
 const productData = [
-    { id: 1, name: 'Akun Free Fire Premium', category: 'Akun', price: 85000, img: 'IMAGES/akunff.jpg' },
-    { id: 2, name: 'Voucher Google Play 100K', category: 'Kode Digital', price: 95000, img: 'IMAGES/voucher_google.jpg' },
-    { id: 3, name: 'Jasa Desain Grafis', category: 'Jasa', price: 150000, img: 'IMAGES/jasa_desain.jpg' },
-    { id: 4, name: 'Akun Spotify Premium', category: 'Akun', price: 65000, img: 'IMAGES/akun_spotify.jpg' },
-    { id: 5, name: 'Voucher Steam Wallet $10', category: 'Kode Digital', price: 160000, img: 'IMAGES/voucher_steam.jpg' },
-    { id: 6, name: 'Jasa Pembuatan Website', category: 'Jasa', price: 450000, img: 'IMAGES/jasa_website.jpg' },
-    { id: 7, name: 'Akun Canva Pro', category: 'Akun', price: 120000, img: 'IMAGES/akun_canva.jpg' },
-    { id: 8, name: 'Voucher PS Store 100K', category: 'Kode Digital', price: 105000, img: 'IMAGES/voucher_ps.jpg' },
-    { id: 9, name: 'Jasa Edit Video', category: 'Jasa', price: 200000, img: 'IMAGES/jasa_edit_video.jpg' },
-    { id: 10, name: 'Akun ChatGPT Plus', category: 'Akun', price: 210000, img: 'IMAGES/akun_chatgpt.jpg' }
+    { id: 1, name: 'Top Up Free Fire', category: 'Top Up', price: 0, img: 'IMAGES/topup_ff.jpg', isTopUp: true, game: 'Free Fire' },
+    { id: 2, name: 'Top Up Mobile Legends', category: 'Top Up', price: 0, img: 'IMAGES/topup_ml.jpg', isTopUp: true, game: 'Mobile Legends' },
+    { id: 3, name: 'Top Up Block Strike', category: 'Top Up', price: 0, img: 'IMAGES/topup_bs.jpg', isTopUp: true, game: 'Block Strike' },
+    { id: 4, name: 'Top Up PUBG', category: 'Top Up', price: 0, img: 'IMAGES/topup_pubg.jpg', isTopUp: true, game: 'PUBG' },
+    { id: 5, name: 'Top Up Roblox', category: 'Top Up', price: 0, img: 'IMAGES/topup_roblox.jpg', isTopUp: true, game: 'Roblox' },
+    { id: 6, name: 'Top Up Among Us (SUS)', category: 'Top Up', price: 0, img: 'IMAGES/topup_sus.jpg', isTopUp: true, game: 'Among Us' },
+    { id: 7, name: 'Akun Valorant Tier 3', category: 'Akun', price: 180000, img: 'IMAGES/akunvalorant.jpg', isTopUp: false },
+    { id: 8, name: 'Voucher Shopee 100K', category: 'Voucher', price: 95000, img: 'IMAGES/vouchersg.jpg', isTopUp: false },
+    { id: 9, name: 'Jasa Desain Logo', category: 'Jasa', price: 150000, img: 'IMAGES/jasadisain.jpg', isTopUp: false },
+    { id: 10, name: 'Jasa Pembuatan Website', category: 'Jasa', price: 450000, img: 'IMAGES/jasaweb.jpg', isTopUp: false }
 ];
+
+// ===== NOMINAL TOP UP =====
+const topUpNominal = {
+    'Free Fire': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }, { label: '100.000', value: 100000 }],
+    'Mobile Legends': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }, { label: '100.000', value: 100000 }],
+    'Block Strike': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }],
+    'PUBG': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }, { label: '100.000', value: 100000 }],
+    'Roblox': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }, { label: '100.000', value: 100000 }],
+    'Among Us': [{ label: '10.000', value: 10000 }, { label: '20.000', value: 20000 }, { label: '50.000', value: 50000 }]
+};
 
 // ===== STATE =====
 let products = JSON.parse(localStorage.getItem('xrezzky_products')) || productData;
@@ -18,7 +28,7 @@ let cart = JSON.parse(localStorage.getItem('xrezzky_cart')) || [];
 let transactions = JSON.parse(localStorage.getItem('xrezzky_transactions')) || [];
 let depositHistory = JSON.parse(localStorage.getItem('xrezzky_deposits')) || [];
 let depositTimer = null;
-let depositTimeLeft = 300; // 5 menit
+let depositTimeLeft = 300;
 let currentQrData = null;
 
 // ===== DOM =====
@@ -31,8 +41,14 @@ const cartTotal = document.getElementById('cartTotal');
 const cartBody = document.getElementById('cartBody');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toastMessage');
+const modal = document.getElementById('topupModal');
+const modalClose = document.getElementById('modalClose');
+const modalGameTitle = document.getElementById('modalGameTitle');
+const modalGameImage = document.getElementById('modalGameImage');
+const modalGameName = document.getElementById('modalGameName');
+const nominalList = document.getElementById('nominalList');
 
-// ===== SAVE FUNCTIONS =====
+// ===== SAVE =====
 function saveProducts() { localStorage.setItem('xrezzky_products', JSON.stringify(products)); }
 function saveCart() { localStorage.setItem('xrezzky_cart', JSON.stringify(cart)); }
 function saveTransactions() { localStorage.setItem('xrezzky_transactions', JSON.stringify(transactions)); }
@@ -41,47 +57,95 @@ function getCartCount() { return cart.reduce((sum, item) => sum + item.qty, 0); 
 
 // ===== RENDER PRODUK =====
 function renderProducts() {
-    productGrid.innerHTML = products.map(p => `
-        <div class="product-card">
-            <div class="product-image">
-                <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300/14243b/00b4ff?text=${encodeURIComponent(p.name)}'">
-            </div>
-            <div class="product-name">${p.name}</div>
-            <div class="product-category">${p.category}</div>
-            <div class="product-price">Rp ${p.price.toLocaleString('id-ID')}</div>
-            <div class="product-actions">
-                <button class="btn-add" data-id="${p.id}"><i class="fas fa-plus"></i> Tambah</button>
-            </div>
-        </div>
-    `).join('');
-
+    const categoryOrder = ['Top Up', 'Akun', 'Voucher', 'Jasa'];
+    let html = '';
+    categoryOrder.forEach(cat => {
+        const items = products.filter(p => p.category === cat);
+        if (items.length === 0) return;
+        html += `<div class="category-group">`;
+        html += `<div class="category-title"><i class="fas fa-tag"></i> ${cat}</div>`;
+        html += `<div class="product-grid">`;
+        items.forEach(p => {
+            html += `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300/14243b/00b4ff?text=${encodeURIComponent(p.name)}'">
+                    </div>
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-category">${p.category}</div>
+                    <div class="product-price">${p.isTopUp ? 'Pilih Nominal' : 'Rp ' + p.price.toLocaleString('id-ID')}</div>
+                    <div class="product-actions">
+                        <button class="btn-add" data-id="${p.id}"><i class="fas fa-plus"></i> ${p.isTopUp ? 'Beli' : 'Tambah'}</button>
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div></div>`;
+    });
+    productGrid.innerHTML = html;
     document.querySelectorAll('.btn-add').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = parseInt(btn.dataset.id);
             const product = products.find(p => p.id === id);
-            if (product) addToCart(product);
+            if (product) {
+                if (product.isTopUp) openTopUpModal(product);
+                else addToCart(product);
+            }
         });
     });
     document.getElementById('totalProductsStat').textContent = products.length;
 }
 
+// ===== MODAL TOP UP =====
+function openTopUpModal(product) {
+    modalGameTitle.textContent = 'Top Up ' + product.game;
+    modalGameImage.src = product.img;
+    modalGameImage.onerror = function() { this.src = 'https://via.placeholder.com/60x60/14243b/00b4ff?text=' + product.game; };
+    modalGameName.textContent = product.game;
+    const nominalData = topUpNominal[product.game] || [];
+    nominalList.innerHTML = '';
+    nominalData.forEach(nom => {
+        const btn = document.createElement('button');
+        btn.className = 'nominal-btn';
+        btn.innerHTML = `${nom.label} <span class="nominal-price">Rp ${nom.value.toLocaleString('id-ID')}</span>`;
+        btn.addEventListener('click', () => {
+            const cartItem = {
+                id: Date.now() + Math.random(),
+                name: `Top Up ${product.game} ${nom.label}`,
+                category: 'Top Up',
+                price: nom.value,
+                img: product.img,
+                qty: 1,
+                isTopUp: true,
+                game: product.game,
+                nominal: nom.value
+            };
+            addToCart(cartItem);
+            closeModal();
+        });
+        nominalList.appendChild(btn);
+    });
+    modal.classList.add('active');
+}
+function closeModal() { modal.classList.remove('active'); }
+modalClose.addEventListener('click', closeModal);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
 // ===== KERANJANG =====
 function addToCart(product) {
-    const existing = cart.find(item => item.id === product.id);
+    const existing = cart.find(item => item.name === product.name && item.price === product.price);
     if (existing) existing.qty += 1;
-    else cart.push({ ...product, qty: 1 });
+    else cart.push({ ...product });
     saveCart();
     updateCartUI();
     showToast(`${product.name} ditambahkan`);
 }
-
 function removeFromCart(id) {
     cart = cart.filter(i => i.id !== id);
     saveCart();
     updateCartUI();
     showToast('Produk dihapus');
 }
-
 function updateCartUI() {
     const count = getCartCount();
     cartBadge.textContent = count;
@@ -94,7 +158,7 @@ function updateCartUI() {
     cartBody.querySelector('.cart-empty').style.display = 'none';
     cartItems.innerHTML = cart.map(item => `
         <div class="cart-item">
-            <img src="${item.img}" onerror="this.src='https://via.placeholder.com/56x56/14243b/00b4ff?text='">
+            <img src="${item.img}" onerror="this.src='https://via.placeholder.com/50x50/14243b/00b4ff?text='">
             <div class="cart-item-info">
                 <div class="cart-item-name">${item.name}</div>
                 <div class="cart-item-price">Rp ${item.price.toLocaleString('id-ID')} × ${item.qty}</div>
@@ -154,6 +218,7 @@ document.getElementById('checkoutBtn').addEventListener('click', () => {
     closeCart();
     showToast(`Checkout berhasil! Total Rp ${total.toLocaleString('id-ID')}`);
     updateHistory();
+    updateCustomerStats();
 });
 
 // ===== DEPOSIT =====
@@ -173,7 +238,6 @@ document.getElementById('depositBtn').addEventListener('click', () => {
     showToast('QRIS digenerate, silakan scan dalam 5 menit');
     startDepositTimer();
 });
-
 function startDepositTimer() {
     if (depositTimer) clearInterval(depositTimer);
     depositTimer = setInterval(() => {
@@ -184,24 +248,17 @@ function startDepositTimer() {
             depositTimer = null;
             document.getElementById('qrResult').style.display = 'none';
             document.querySelector('.qr-placeholder').style.display = 'block';
-            showToast('Waktu deposit habis! Silakan generate ulang.');
+            showToast('Waktu deposit habis! Generate ulang.');
             currentQrData = null;
         }
     }, 1000);
 }
-
 function updateTimerDisplay() {
     const mins = String(Math.floor(depositTimeLeft / 60)).padStart(2, '0');
     const secs = String(depositTimeLeft % 60).padStart(2, '0');
     document.getElementById('qrTimer').textContent = `⏱️ ${mins}:${secs}`;
-    if (depositTimeLeft < 60) {
-        document.getElementById('qrTimer').style.color = '#ff4d6d';
-    } else {
-        document.getElementById('qrTimer').style.color = '#ffb347';
-    }
+    document.getElementById('qrTimer').style.color = depositTimeLeft < 60 ? '#ff4d6d' : '#ffb347';
 }
-
-// Konfirmasi Deposit
 document.getElementById('confirmDepositBtn').addEventListener('click', () => {
     if (!currentQrData) { showToast('Tidak ada deposit aktif'); return; }
     if (depositTimeLeft <= 0) { showToast('Waktu deposit habis! Generate ulang.'); return; }
@@ -217,14 +274,7 @@ document.getElementById('confirmDepositBtn').addEventListener('click', () => {
     };
     transactions.push(transaction);
     saveTransactions();
-    // Simpan ke riwayat deposit
-    depositHistory.push({
-        id: Date.now(),
-        amount: dep.amount,
-        method: dep.method,
-        date: dep.date,
-        status: 'Sukses'
-    });
+    depositHistory.push({ id: Date.now(), amount: dep.amount, method: dep.method, date: dep.date, status: 'Sukses' });
     saveDeposits();
     showToast(`Deposit Rp ${dep.amount.toLocaleString('id-ID')} berhasil!`);
     document.getElementById('qrResult').style.display = 'none';
@@ -233,11 +283,10 @@ document.getElementById('confirmDepositBtn').addEventListener('click', () => {
     currentQrData = null;
     updateHistory();
     updateDepositHistory();
+    updateCustomerStats();
 });
-
-// Download QRIS
 document.getElementById('downloadQrBtn').addEventListener('click', () => {
-    if (!currentQrData) { showToast('Tidak ada QRIS untuk di-download'); return; }
+    if (!currentQrData) { showToast('Tidak ada QRIS'); return; }
     const link = document.createElement('a');
     link.download = `QRIS_XREZZKY_${Date.now()}.png`;
     link.href = currentQrData.qrUrl;
@@ -245,8 +294,6 @@ document.getElementById('downloadQrBtn').addEventListener('click', () => {
     link.click();
     showToast('Download QRIS dimulai');
 });
-
-// Batal Deposit
 document.getElementById('cancelDepositBtn').addEventListener('click', () => {
     if (depositTimer) { clearInterval(depositTimer); depositTimer = null; }
     document.getElementById('qrResult').style.display = 'none';
@@ -255,7 +302,7 @@ document.getElementById('cancelDepositBtn').addEventListener('click', () => {
     showToast('Deposit dibatalkan');
 });
 
-// ===== RIWAYAT DEPOSIT =====
+// ===== RIWAYAT =====
 function updateDepositHistory() {
     const container = document.getElementById('depositHistoryList');
     if (depositHistory.length === 0) {
@@ -264,23 +311,15 @@ function updateDepositHistory() {
     }
     container.innerHTML = depositHistory.slice().reverse().map(d => `
         <div class="history-item">
-            <div class="h-left">
-                <span class="h-title">Deposit</span>
-                <span class="h-desc">${d.date} • ${d.method}</span>
-            </div>
-            <div class="h-right">
-                <span>Rp ${d.amount.toLocaleString('id-ID')}</span>
-                <span class="h-status">${d.status}</span>
-            </div>
+            <div class="h-left"><span class="h-title">Deposit</span><span class="h-desc">${d.date} • ${d.method}</span></div>
+            <div class="h-right"><span>Rp ${d.amount.toLocaleString('id-ID')}</span><span class="h-status">${d.status}</span></div>
         </div>
     `).join('');
 }
-
-// ===== RIWAYAT TRANSAKSI =====
 function updateHistory() {
     const container = document.getElementById('historyList');
     if (transactions.length === 0) {
-        container.innerHTML = `<div class="history-empty"><i class="fas fa-inbox" style="font-size:3rem;color:#334466;"></i><p>Belum ada transaksi</p></div>`;
+        container.innerHTML = `<div class="history-empty"><i class="fas fa-inbox"></i><p>Belum ada transaksi</p></div>`;
         return;
     }
     container.innerHTML = transactions.slice().reverse().map(t => `
@@ -290,15 +329,10 @@ function updateHistory() {
                 <span class="h-desc">${t.date} • ${t.method || 'Transfer'}</span>
                 ${t.items ? t.items.map(i => `${i.name} (${i.qty})`).join(', ') : ''}
             </div>
-            <div class="h-right">
-                <span>Rp ${t.total.toLocaleString('id-ID')}</span>
-                <span class="h-status">${t.status}</span>
-            </div>
+            <div class="h-right"><span>Rp ${t.total.toLocaleString('id-ID')}</span><span class="h-status">${t.status}</span></div>
         </div>
     `).join('');
 }
-
-// ===== CUSTOMER STATS =====
 function updateCustomerStats() {
     const uniqueCustomers = new Set(transactions.map(t => t.id)).size;
     document.getElementById('totalCustomersStat').textContent = Math.max(1, uniqueCustomers);

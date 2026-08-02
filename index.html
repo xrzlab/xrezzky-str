@@ -31,19 +31,18 @@
         </div>
     </header>
 
-    <!-- ===== HERO ===== -->
+    <!-- ===== HERO / BANNER VIDEO (FULL WIDTH + AUTOPLAY) ===== -->
     <section class="hero" id="home">
         <div class="hero-video-wrapper">
             <video class="hero-video" autoplay muted loop playsinline>
                 <source src="VIDEO/banner.mp4" type="video/mp4" />
-                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
             </video>
             <div class="hero-overlay"></div>
         </div>
         <div class="hero-content container">
             <div class="hero-badge"><i class="fas fa-bolt"></i> Premium Digital Store</div>
             <h1 class="hero-title"><span class="highlight">XREZZKY</span> STORE</h1>
-            <p class="hero-subtitle">Tempat terpercaya untuk membeli akun, kode digital, dan jasa. Aman, cepat, dan harga terbaik.</p>
+            <p class="hero-subtitle">Top Up Game, Akun, Voucher & Jasa Digital. Aman, cepat, dan harga terbaik.</p>
             <div class="hero-actions">
                 <a href="#products" class="btn-primary"><i class="fas fa-store"></i> Lihat Produk</a>
                 <a href="#deposit" class="btn-secondary"><i class="fas fa-wallet"></i> Deposit</a>
@@ -62,9 +61,9 @@
             <div class="section-header">
                 <div class="section-tag"><i class="fas fa-grid-2"></i> Katalog</div>
                 <h2 class="section-title">Produk <span class="highlight">Unggulan</span></h2>
-                <p class="section-desc">Pilih produk digital, akun, atau jasa terbaik dari XREZZKY STORE.</p>
+                <p class="section-desc">Pilih Top Up Game, Akun, Voucher, atau Jasa terbaik dari XREZZKY STORE.</p>
             </div>
-            <div class="product-grid" id="productGrid"></div>
+            <div id="productGrid"></div>
         </div>
     </section>
 
@@ -74,7 +73,7 @@
             <div class="section-header">
                 <div class="section-tag"><i class="fas fa-wallet"></i> Isi Saldo</div>
                 <h2 class="section-title">Deposit <span class="highlight">QRIS</span></h2>
-                <p class="section-desc">Isi saldo Anda dengan cepat menggunakan QRIS dinamis. Waktu deposit 5 menit.</p>
+                <p class="section-desc">Isi saldo Anda dengan QRIS dinamis. Waktu deposit 5 menit.</p>
             </div>
             <div class="deposit-wrapper">
                 <div class="deposit-form">
@@ -86,8 +85,8 @@
                         <label>Metode Pembayaran</label>
                         <select id="depositMethod">
                             <option value="QRIS">QRIS (Semua Bank & E-Wallet)</option>
-                            <option value="Bank BCA">Bank BCA</option>
-                            <option value="Bank Mandiri">Bank Mandiri</option>
+                            <option value="BCA">BCA</option>
+                            <option value="Mandiri">Mandiri</option>
                             <option value="OVO">OVO</option>
                             <option value="GoPay">GoPay</option>
                         </select>
@@ -98,7 +97,7 @@
                     <div class="qr-placeholder">
                         <i class="fas fa-qrcode" style="font-size:4rem;color:#00b4ff;"></i>
                         <p>Klik tombol untuk generate QRIS</p>
-                        <img src="IMAGES/topup.jpg" alt="topup" style="max-width:100px;margin-top:10px;opacity:0.5;" onerror="this.style.display='none'" />
+                        <img src="IMAGES/topup_ff.jpg" alt="topup" style="max-width:100px;margin-top:10px;opacity:0.5;" onerror="this.style.display='none'" />
                     </div>
                     <div id="qrResult" style="display:none;text-align:center;width:100%;">
                         <img id="qrImage" src="" alt="QRIS" style="width:200px;height:200px;border-radius:12px;background:#fff;padding:12px;margin:0 auto;" />
@@ -113,7 +112,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Riwayat Deposit -->
             <div class="deposit-history" style="margin-top:40px;">
                 <h4 style="margin-bottom:16px;"><i class="fas fa-clock-rotate-left"></i> Riwayat Deposit</h4>
                 <div id="depositHistoryList" class="history-list"></div>
@@ -164,7 +162,7 @@
             <div class="footer-grid">
                 <div class="footer-brand">
                     <div class="logo"><i class="fas fa-cube"></i><span>XREZZKY</span><span class="logo-accent">STORE</span></div>
-                    <p class="footer-desc">Platform jual beli akun, kode digital, dan jasa terpercaya.</p>
+                    <p class="footer-desc">Platform Top Up Game, Akun, Voucher & Jasa Digital terpercaya.</p>
                     <div class="footer-social">
                         <a href="#"><i class="fab fa-instagram"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -173,7 +171,7 @@
                     </div>
                 </div>
                 <div class="footer-links"><h4>Menu</h4><a href="#home">Beranda</a><a href="#products">Produk</a><a href="#deposit">Deposit</a><a href="#history">Riwayat</a></div>
-                <div class="footer-links"><h4>Kategori</h4><a href="#products">Akun</a><a href="#products">Kode Digital</a><a href="#products">Jasa</a></div>
+                <div class="footer-links"><h4>Kategori</h4><a href="#products">Top Up</a><a href="#products">Akun</a><a href="#products">Voucher</a><a href="#products">Jasa</a></div>
                 <div class="footer-links"><h4>Kontak</h4><a href="#"><i class="fas fa-phone"></i> +62 812 3456 7890</a><a href="#"><i class="fas fa-envelope"></i> support@xrezzky.com</a></div>
             </div>
             <div class="footer-bottom"><p>&copy; 2026 <strong>XREZZKY STORE</strong>. All rights reserved.</p><p class="footer-credit">Built with <i class="fas fa-heart" style="color:#00b4ff;"></i> by XREZZKY</p></div>
@@ -193,6 +191,23 @@
             <button class="btn-primary full" id="checkoutBtn"><i class="fas fa-check"></i> Checkout</button>
         </div>
     </aside>
+
+    <!-- ===== MODAL TOP UP ===== -->
+    <div class="modal-overlay" id="topupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalGameTitle">Top Up Game</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-game-info">
+                    <img id="modalGameImage" src="" alt="Game" />
+                    <span id="modalGameName">Game Name</span>
+                </div>
+                <div class="modal-nominal-list" id="nominalList"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMessage">Sukses!</span></div>
