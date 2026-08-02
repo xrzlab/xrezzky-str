@@ -7,10 +7,21 @@ const productData = [
     { id: 5, name: 'Top Up Roblox', category: 'Top Up', price: 0, img: 'IMAGES/topup_roblox.jpg', isTopUp: true, game: 'Roblox' },
     { id: 6, name: 'Top Up Among Us (SUS)', category: 'Top Up', price: 0, img: 'IMAGES/topup_sus.jpg', isTopUp: true, game: 'Among Us' },
     { id: 7, name: 'Top Up PUBG New State', category: 'Top Up', price: 0, img: 'IMAGES/topup_pubgns.jpg', isTopUp: true, game: 'PUBG New State' },
-    { id: 7, name: 'Akun Valorant Tier 3', category: 'Akun', price: 180000, img: 'IMAGES/akunvalorant.jpg', isTopUp: false },
-    { id: 8, name: 'Voucher Shopee 100K', category: 'Voucher', price: 95000, img: 'IMAGES/vouchersg.jpg', isTopUp: false },
-    { id: 9, name: 'Jasa Desain Logo', category: 'Jasa', price: 150000, img: 'IMAGES/jasadisain.jpg', isTopUp: false },
-    { id: 10, name: 'Jasa Pembuatan Website', category: 'Jasa', price: 450000, img: 'IMAGES/jasaweb.jpg', isTopUp: false }
+    { id: 8, name: 'Akun Valorant Tier 3', category: 'Akun', price: 180000, img: 'IMAGES/akunvalorant.jpg', isTopUp: false },
+    { id: 12, name: 'Akun Free Fire', category: 'Akun', price: 250000, img: 'IMAGES/akun_ff.jpg', isTopUp: false },
+    { id: 13, name: 'Akun Mobile Legends', category: 'Akun', price: 200000, img: 'IMAGES/akun_ml.jpg', isTopUp: false },
+    { id: 14, name: 'Akun Roblox', category: 'Akun', price: 90000, img: 'IMAGES/akun_roblox.jpg', isTopUp: false },
+    { id: 15, name: 'Akun Blood Strike', category: 'Akun', price: 75000, img: 'IMAGES/akun_bs.jpg', isTopUp: false },
+    { id: 16, name: 'Akun Super Sus (SUS)', category: 'Akun', price: 60000, img: 'IMAGES/akun_sus.jpg', isTopUp: false },
+    { id: 9, name: 'Voucher Shopee 100K', category: 'Voucher', price: 95000, img: 'IMAGES/vouchersg.jpg', isTopUp: false },
+    { id: 17, name: 'Voucher GoFood 25K', category: 'Voucher', price: 24000, img: 'IMAGES/voucher_gofood.jpg', isTopUp: false },
+    { id: 18, name: 'Voucher Alfamart 50K', category: 'Voucher', price: 49000, img: 'IMAGES/voucher_alfamart.jpg', isTopUp: false },
+    { id: 19, name: 'Voucher Indomaret 50K', category: 'Voucher', price: 49000, img: 'IMAGES/voucher_indomaret.jpg', isTopUp: false },
+    { id: 20, name: 'Voucher Tokopedia 50K', category: 'Voucher', price: 49500, img: 'IMAGES/voucher_tokopedia.jpg', isTopUp: false },
+    { id: 10, name: 'Jasa Desain Logo', category: 'Jasa', price: 150000, img: 'IMAGES/jasadisain.jpg', isTopUp: false },
+    { id: 11, name: 'Jasa Pembuatan Website', category: 'Jasa', price: 450000, img: 'IMAGES/jasaweb.jpg', isTopUp: false },
+    { id: 21, name: 'Jasa Setup Panel Pterodactyl', category: 'Jasa', price: 100000, img: 'IMAGES/jasa_pterodactyl.jpg', isTopUp: false },
+    { id: 22, name: 'Jasa Install & Setup Bot WhatsApp', category: 'Jasa', price: 75000, img: 'IMAGES/jasa_botwa.jpg', isTopUp: false }
 ];
 
 // ===== KATALOG TOP UP LENGKAP (harga sudah +500 markup dari harga supplier) =====
@@ -308,10 +319,12 @@ function renderProducts() {
         html += `<div class="category-title"><i class="fas fa-tag"></i> ${cat}</div>`;
         html += `<div class="product-grid">`;
         items.forEach(p => {
+            const isAkun = p.category === 'Akun';
             html += `
                 <div class="product-card">
-                    <div class="product-image">
+                    <div class="product-image${isAkun ? ' clickable-img' : ''}"${isAkun ? ' data-zoomable="1"' : ''}>
                         <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300/14243b/00b4ff?text=${encodeURIComponent(p.name)}'">
+                        ${isAkun ? '<div class="zoom-hint"><i class="fas fa-magnifying-glass-plus"></i></div>' : ''}
                     </div>
                     <div class="product-name">${p.name}</div>
                     <div class="product-category">${p.category}</div>
@@ -335,8 +348,30 @@ function renderProducts() {
             }
         });
     });
+    document.querySelectorAll('.clickable-img').forEach(el => {
+        el.addEventListener('click', () => {
+            const imgEl = el.querySelector('img');
+            if (imgEl) openImgViewer(imgEl.src, imgEl.alt);
+        });
+    });
     document.getElementById('totalProductsStat').textContent = products.length;
 }
+
+// ===== VIEWER GAMBAR FULL SCREEN (khusus foto akun) =====
+const imgViewer = document.getElementById('imgViewer');
+const imgViewerImage = document.getElementById('imgViewerImage');
+function openImgViewer(src, alt) {
+    imgViewerImage.src = src;
+    imgViewerImage.alt = alt || '';
+    imgViewer.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function closeImgViewer() {
+    imgViewer.classList.remove('active');
+    document.body.style.overflow = '';
+}
+document.getElementById('imgViewerClose').addEventListener('click', closeImgViewer);
+imgViewer.addEventListener('click', (e) => { if (e.target === imgViewer) closeImgViewer(); });
 
 // ===== MODAL TOP UP =====
 let currentTopUpCategory = null;

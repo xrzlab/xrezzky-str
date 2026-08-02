@@ -479,6 +479,64 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .login-gate i { font-size: 2.4rem; color: #00b4ff; }
 .login-gate p { color: #b0c4de; font-size: 0.95rem; max-width: 320px; }
 
+/* ===== IMAGE VIEWER FULL SCREEN (khusus foto akun) ===== */
+.clickable-img { position: relative; cursor: pointer; }
+.zoom-hint {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: 0.25s ease;
+    pointer-events: none;
+}
+.clickable-img:hover .zoom-hint { opacity: 1; }
+.img-viewer {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.94);
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s ease;
+}
+.img-viewer.active { opacity: 1; pointer-events: all; }
+.img-viewer img {
+    max-width: 92%;
+    max-height: 85%;
+    object-fit: contain;
+    border-radius: 12px;
+}
+.img-viewer-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 1.8rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.25s ease;
+}
+.img-viewer-close:hover { background: rgba(255, 77, 109, 0.2); border-color: rgba(255, 77, 109, 0.4); transform: rotate(90deg); }
+
 /* ===== HALAMAN TOP UP (bukan popup — slide masuk sebagai halaman) ===== */
 .topup-page {
     position: fixed;
