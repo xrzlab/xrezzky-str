@@ -105,21 +105,22 @@
                     <div class="qr-placeholder">
                         <i class="fas fa-qrcode" style="font-size:4rem;color:#00b4ff;"></i>
                         <p>Klik tombol untuk generate QRIS</p>
-                        <img src="IMAGES/topup_ff.jpg" alt="topup" style="max-width:100px;margin-top:10px;opacity:0.5;" onerror="this.style.display='none'" />
                     </div>
                     <div id="qrResult" style="display:none;text-align:center;width:100%;">
                         <img id="qrImage" src="" alt="QRIS" style="width:200px;height:200px;border-radius:12px;background:#fff;padding:12px;margin:0 auto;" />
                         <p id="qrAmount" style="margin-top:12px;font-weight:600;color:#00b4ff;"></p>
                         <p id="qrTimer" style="font-weight:500;color:#ffb347;">⏱️ 05:00</p>
-                        <p style="font-size:0.9rem;color:#8899bb;">Scan QRIS untuk menyelesaikan deposit</p>
+                        <p style="font-size:0.9rem;color:#8899bb;">Scan QRIS, lalu tekan "Saya Sudah Bayar" untuk verifikasi</p>
+                        <div id="qrCheckingStatus" style="display:none;color:#00b4ff;font-size:0.9rem;margin-top:8px;"><i class="fas fa-spinner fa-spin"></i> Memeriksa status pembayaran...</div>
                         <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
-                            <button class="btn-secondary" id="confirmDepositBtn"><i class="fas fa-check"></i> Konfirmasi</button>
+                            <button class="btn-secondary" id="confirmDepositBtn"><i class="fas fa-check"></i> Saya Sudah Bayar</button>
                             <button class="btn-secondary" id="downloadQrBtn"><i class="fas fa-download"></i> Download QRIS</button>
                             <button class="btn-secondary" id="cancelDepositBtn" style="border-color:#ff4d6d;color:#ff4d6d;"><i class="fas fa-times"></i> Batal</button>
                         </div>
                     </div>
                 </div>
             </div>
+            <p class="deposit-note"><i class="fas fa-circle-info"></i> Minimal deposit Rp 10.000, maksimal Rp 5.000.000 per transaksi.</p>
             <div class="login-gate" id="depositLoginGate" style="display:none;">
                 <i class="fas fa-lock"></i>
                 <p>Kamu harus <strong>masuk atau daftar</strong> dulu buat isi saldo.</p>
@@ -212,11 +213,14 @@
             <h3 id="modalGameTitle">Top Up Game</h3>
         </div>
         <div class="tp-banner">
-            <img id="modalGameImage" src="" alt="Game" />
+            <div class="tp-banner-bg" id="tpBannerBg"></div>
             <div class="tp-banner-overlay"></div>
-            <div class="tp-banner-text">
-                <span id="modalGameName">Game Name</span>
-                <p>Isi ulang cepat, aman &amp; harga terbaik</p>
+            <div class="tp-banner-content">
+                <div class="tp-banner-logo"><img id="modalGameImage" src="" alt="Game" /></div>
+                <div class="tp-banner-text">
+                    <span id="modalGameName">Game Name</span>
+                    <p>Isi ulang cepat, aman &amp; harga terbaik</p>
+                </div>
             </div>
         </div>
         <div class="tp-body container">
@@ -317,6 +321,27 @@
                     <button class="btn-secondary full" id="logoutBtn" style="border-color:#ff4d6d;color:#ff4d6d;"><i class="fas fa-right-from-bracket"></i> Keluar</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ===== HALAMAN DETAIL PRODUK (Akun / Voucher / Jasa) ===== -->
+    <div class="product-page" id="productPage">
+        <div class="tp-page-header">
+            <button class="tp-back-btn" id="productPageBack" type="button"><i class="fas fa-arrow-left"></i></button>
+            <h3 id="ppName">Nama Produk</h3>
+        </div>
+        <div class="pp-image-frame" id="ppImageFrame">
+            <img id="ppImage" src="" alt="" />
+        </div>
+        <div class="pp-body container">
+            <span class="pp-category" id="ppCategory">Kategori</span>
+            <h2 id="ppNameBig">Nama Produk</h2>
+            <p class="pp-desc" id="ppDesc">Deskripsi produk...</p>
+            <div class="pp-price-box">
+                <span>Harga</span>
+                <strong id="ppPrice">Rp 0</strong>
+            </div>
+            <button class="btn-primary full" id="ppAddBtn" type="button"><i class="fas fa-cart-plus"></i> Tambah ke Keranjang</button>
         </div>
     </div>
 

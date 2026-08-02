@@ -319,12 +319,10 @@ function renderProducts() {
         html += `<div class="category-title"><i class="fas fa-tag"></i> ${cat}</div>`;
         html += `<div class="product-grid">`;
         items.forEach(p => {
-            const isAkun = p.category === 'Akun';
             html += `
-                <div class="product-card">
-                    <div class="product-image${isAkun ? ' clickable-img' : ''}"${isAkun ? ' data-zoomable="1"' : ''}>
+                <div class="product-card"${!p.isTopUp ? ` data-detail-id="${p.id}"` : ''}>
+                    <div class="product-image">
                         <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300/14243b/00b4ff?text=${encodeURIComponent(p.name)}'">
-                        ${isAkun ? '<div class="zoom-hint"><i class="fas fa-magnifying-glass-plus"></i></div>' : ''}
                     </div>
                     <div class="product-name">${p.name}</div>
                     <div class="product-category">${p.category}</div>
@@ -339,7 +337,8 @@ function renderProducts() {
     });
     productGrid.innerHTML = html;
     document.querySelectorAll('.btn-add').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
             const id = parseInt(btn.dataset.id);
             const product = products.find(p => p.id === id);
             if (product) {
@@ -348,10 +347,11 @@ function renderProducts() {
             }
         });
     });
-    document.querySelectorAll('.clickable-img').forEach(el => {
-        el.addEventListener('click', () => {
-            const imgEl = el.querySelector('img');
-            if (imgEl) openImgViewer(imgEl.src, imgEl.alt);
+    document.querySelectorAll('.product-card[data-detail-id]').forEach(card => {
+        card.addEventListener('click', () => {
+            const id = parseInt(card.dataset.detailId);
+            const product = products.find(p => p.id === id);
+            if (product) openProductPage(product);
         });
     });
     document.getElementById('totalProductsStat').textContent = products.length;
@@ -373,6 +373,51 @@ function closeImgViewer() {
 document.getElementById('imgViewerClose').addEventListener('click', closeImgViewer);
 imgViewer.addEventListener('click', (e) => { if (e.target === imgViewer) closeImgViewer(); });
 
+// ===== HALAMAN DETAIL PRODUK (Akun / Voucher / Jasa) =====
+const productPage = document.getElementById('productPage');
+
+function getProductDescription(product) {
+    if (product.category === 'Akun') {
+        return `Akun ${product.name.replace('Akun ', '')} siap pakai. Data akun (login & detail) dikirim otomatis ke Riwayat Transaksi setelah pembayaran berhasil dikonfirmasi. Ada kendala? Hubungi Layanan Bantuan sebelum order ya.`;
+    }
+    if (product.category === 'Voucher') {
+        return `Kode voucher digital untuk ${product.name} dikirim otomatis setelah pembayaran sukses. Pastikan cek syarat & ketentuan dari pihak penerbit voucher sebelum digunakan.`;
+    }
+    if (product.category === 'Jasa') {
+        return `${product.name} dikerjakan langsung oleh tim XREZZKY STORE. Estimasi waktu pengerjaan & detail teknis akan dikonfirmasi lewat WhatsApp setelah order kamu masuk.`;
+    }
+    return 'Produk digital dari XREZZKY STORE — aman, cepat, dan terpercaya.';
+}
+
+function openProductPage(product) {
+    document.getElementById('ppName').textContent = product.name;
+    document.getElementById('ppNameBig').textContent = product.name;
+    document.getElementById('ppCategory').textContent = product.category;
+    document.getElementById('ppPrice').textContent = 'Rp ' + product.price.toLocaleString('id-ID');
+    document.getElementById('ppDesc').textContent = getProductDescription(product);
+
+    const img = document.getElementById('ppImage');
+    img.src = product.img;
+    img.alt = product.name;
+    img.onerror = function() { this.src = 'https://via.placeholder.com/500x500/14243b/00b4ff?text=' + encodeURIComponent(product.name); };
+
+    document.getElementById('ppAddBtn').onclick = () => {
+        addToCart(product);
+        showToast(`${product.name} ditambahkan ke keranjang`);
+    };
+
+    productPage.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+document.getElementById('productPageBack').addEventListener('click', () => {
+    productPage.classList.remove('active');
+    document.body.style.overflow = '';
+});
+document.getElementById('ppImageFrame').addEventListener('click', () => {
+    const img = document.getElementById('ppImage');
+    openImgViewer(img.src, img.alt);
+});
+
 // ===== MODAL TOP UP =====
 let currentTopUpCategory = null;
 
@@ -386,6 +431,7 @@ function openTopUpModal(product) {
     modalGameTitle.textContent = 'Top Up ' + product.game;
     modalGameImage.src = product.img;
     modalGameImage.onerror = function() { this.src = 'https://via.placeholder.com/60x60/14243b/00b4ff?text=' + product.game; };
+    document.getElementById('tpBannerBg').style.backgroundImage = `url('${product.img}')`;
     modalGameName.textContent = product.game;
 
     // Reset form ID
@@ -657,7 +703,8 @@ document.getElementById('checkoutBtn').addEventListener('click', () => {
 document.getElementById('depositBtn').addEventListener('click', () => {
     if (!isLoggedIn()) { showToast('Masuk / daftar dulu untuk deposit'); openAuthModal('login'); return; }
     let amount = parseInt(document.getElementById('depositAmount').value);
-    if (isNaN(amount) || amount < 1) { showToast('Masukkan nominal yang valid'); return; }
+    if (isNaN(amount) || amount < 10000) { showToast('Deposit minimal Rp 10.000'); return; }
+    if (amount > 5000000) { showToast('Deposit maksimal Rp 5.000.000 per transaksi'); return; }
     const method = document.getElementById('depositMethod').value;
     const qrData = `XREZZKY-DEPOSIT-${Date.now()}-${amount}-${method}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`;
@@ -692,39 +739,56 @@ function updateTimerDisplay() {
     document.getElementById('qrTimer').textContent = `⏱️ ${mins}:${secs}`;
     document.getElementById('qrTimer').style.color = depositTimeLeft < 60 ? '#ff4d6d' : '#ffb347';
 }
-document.getElementById('confirmDepositBtn').addEventListener('click', () => {
+document.getElementById('confirmDepositBtn').addEventListener('click', (e) => {
     if (!isLoggedIn()) { showToast('Masuk / daftar dulu untuk deposit'); openAuthModal('login'); return; }
     if (!currentQrData) { showToast('Tidak ada deposit aktif'); return; }
     if (depositTimeLeft <= 0) { showToast('Waktu deposit habis! Generate ulang.'); return; }
-    const dep = currentQrData;
-    const transaction = {
-        id: Date.now(),
-        type: 'Deposit',
-        total: dep.amount,
-        method: dep.method,
-        status: 'Sukses',
-        date: dep.date,
-        items: [{ name: 'Deposit Saldo', qty: 1, price: dep.amount }]
-    };
-    transactions.push(transaction);
-    saveTransactions();
-    depositHistory.push({ id: Date.now(), amount: dep.amount, method: dep.method, date: dep.date, status: 'Sukses' });
-    saveDeposits();
 
-    // Tambahkan ke saldo akun yang sedang login
-    const user = getCurrentUser();
-    user.saldo += dep.amount;
-    saveUsers();
-    updateAuthUI();
+    const btn = e.currentTarget;
+    const statusEl = document.getElementById('qrCheckingStatus');
+    btn.disabled = true;
+    document.getElementById('downloadQrBtn').disabled = true;
+    document.getElementById('cancelDepositBtn').disabled = true;
+    statusEl.style.display = 'block';
 
-    showToast(`Deposit Rp ${dep.amount.toLocaleString('id-ID')} berhasil! Saldo sekarang Rp ${user.saldo.toLocaleString('id-ID')}`);
-    document.getElementById('qrResult').style.display = 'none';
-    document.querySelector('.qr-placeholder').style.display = 'block';
-    if (depositTimer) { clearInterval(depositTimer); depositTimer = null; }
-    currentQrData = null;
-    updateHistory();
-    updateDepositHistory();
-    updateCustomerStats();
+    // Simulasi jeda pengecekan status pembayaran (bukan verifikasi asli — lihat catatan di README/summary)
+    setTimeout(() => {
+        statusEl.style.display = 'none';
+        btn.disabled = false;
+        document.getElementById('downloadQrBtn').disabled = false;
+        document.getElementById('cancelDepositBtn').disabled = false;
+
+        if (!currentQrData) return; // dibatalkan / expired selagi nunggu
+        const dep = currentQrData;
+        const transaction = {
+            id: Date.now(),
+            type: 'Deposit',
+            total: dep.amount,
+            method: dep.method,
+            status: 'Sukses',
+            date: dep.date,
+            items: [{ name: 'Deposit Saldo', qty: 1, price: dep.amount }]
+        };
+        transactions.push(transaction);
+        saveTransactions();
+        depositHistory.push({ id: Date.now(), amount: dep.amount, method: dep.method, date: dep.date, status: 'Sukses' });
+        saveDeposits();
+
+        // Tambahkan ke saldo akun yang sedang login
+        const user = getCurrentUser();
+        user.saldo += dep.amount;
+        saveUsers();
+        updateAuthUI();
+
+        showToast(`Deposit Rp ${dep.amount.toLocaleString('id-ID')} berhasil! Saldo sekarang Rp ${user.saldo.toLocaleString('id-ID')}`);
+        document.getElementById('qrResult').style.display = 'none';
+        document.querySelector('.qr-placeholder').style.display = 'block';
+        if (depositTimer) { clearInterval(depositTimer); depositTimer = null; }
+        currentQrData = null;
+        updateHistory();
+        updateDepositHistory();
+        updateCustomerStats();
+    }, 2200);
 });
 document.getElementById('downloadQrBtn').addEventListener('click', () => {
     if (!currentQrData) { showToast('Tidak ada QRIS'); return; }
@@ -746,32 +810,32 @@ document.getElementById('cancelDepositBtn').addEventListener('click', () => {
 // ===== RIWAYAT =====
 function updateDepositHistory() {
     const container = document.getElementById('depositHistoryList');
-    if (depositHistory.length === 0) {
+    if (!depositHistory || depositHistory.length === 0) {
         container.innerHTML = `<div class="history-empty">Belum ada riwayat deposit</div>`;
         return;
     }
     container.innerHTML = depositHistory.slice().reverse().map(d => `
         <div class="history-item">
-            <div class="h-left"><span class="h-title">Deposit</span><span class="h-desc">${d.date} • ${d.method}</span></div>
-            <div class="h-right"><span>Rp ${d.amount.toLocaleString('id-ID')}</span><span class="h-status">${d.status}</span></div>
+            <div class="h-left"><span class="h-title">Deposit</span><span class="h-desc">${d.date || '-'} • ${d.method || '-'}</span></div>
+            <div class="h-right"><span>Rp ${(d.amount || 0).toLocaleString('id-ID')}</span><span class="h-status">${d.status || 'Sukses'}</span></div>
         </div>
     `).join('');
 }
 function updateHistory() {
     const container = document.getElementById('historyList');
-    if (transactions.length === 0) {
+    if (!transactions || transactions.length === 0) {
         container.innerHTML = `<div class="history-empty"><i class="fas fa-inbox"></i><p>Belum ada transaksi</p></div>`;
         return;
     }
     container.innerHTML = transactions.slice().reverse().map(t => `
         <div class="history-item">
             <div class="h-left">
-                <span class="h-title">${t.type}</span>
-                <span class="h-desc">${t.date} • ${t.method || 'Transfer'}</span>
-                ${t.items ? t.items.map(i => `${i.name} (${i.qty})`).join(', ') : ''}
+                <span class="h-title">${t.type || 'Transaksi'}</span>
+                <span class="h-desc">${t.date || '-'} • ${t.method || 'Transfer'}</span>
+                ${Array.isArray(t.items) ? t.items.map(i => `${i.name || ''} (${i.qty || 1})`).join(', ') : ''}
                 ${t.type === 'Top Up' && t.accountId ? `<br><span class="h-desc">ID: ${t.accountId}${t.nickname ? ' • ' + t.nickname : ''}</span>` : ''}
             </div>
-            <div class="h-right"><span>Rp ${t.total.toLocaleString('id-ID')}</span><span class="h-status">${t.status}</span></div>
+            <div class="h-right"><span>Rp ${(t.total || 0).toLocaleString('id-ID')}</span><span class="h-status">${t.status || 'Sukses'}</span></div>
         </div>
     `).join('');
 }
