@@ -311,11 +311,12 @@ function getCartCount() { return cart.reduce((sum, item) => sum + item.qty, 0); 
 // ===== RENDER PRODUK =====
 function renderProducts() {
     const categoryOrder = ['Top Up', 'Akun', 'Voucher', 'Jasa'];
+    const categorySlug = { 'Top Up': 'topup', 'Akun': 'akun', 'Voucher': 'voucher', 'Jasa': 'jasa' };
     let html = '';
     categoryOrder.forEach(cat => {
         const items = products.filter(p => p.category === cat);
         if (items.length === 0) return;
-        html += `<div class="category-group">`;
+        html += `<div class="category-group" id="cat-${categorySlug[cat]}">`;
         html += `<div class="category-title"><i class="fas fa-tag"></i> ${cat}</div>`;
         html += `<div class="product-grid">`;
         items.forEach(p => {

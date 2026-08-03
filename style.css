@@ -221,6 +221,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     padding: 70px 0;
     background: linear-gradient(180deg, #0a1628 0%, #0d1f3a 100%);
 }
+#home, #products, #deposit, #history, #contact, .category-group { scroll-margin-top: 78px; }
 .category-group { margin-bottom: 40px; }
 .category-group:last-child { margin-bottom: 0; }
 .category-title {
@@ -1108,7 +1109,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     .contact-wrapper, .deposit-wrapper { grid-template-columns: 1fr; gap: 34px; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
 }
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .nav-links {
         position: fixed;
         top: 0;
@@ -1122,6 +1123,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
         transition: 0.4s ease;
         border-bottom: 1px solid rgba(0, 180, 255, 0.1);
         align-items: center;
+        z-index: 999;
     }
     .nav-links.open { transform: translateY(0); }
     .hamburger { display: flex; }
